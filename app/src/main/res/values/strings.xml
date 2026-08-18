@@ -1,3 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TopalFX</string>
+    <string name="app_name">TopalFX Pro</string>
+
+    <!-- Ticker -->
+    <string name="ticker_title">الأسعار الحية</string>
+    <string name="ticker_refresh">تحديث الأسعار</string>
+    <string name="ticker_edit_pairs">تعديل الأزواج</string>
+    <string name="ticker_add_pair">إضافة زوج</string>
+    <string name="ticker_pair_hint">مثال: EUR/USD</string>
+    <string name="ticker_invalid_pair">صيغة الزوج غير صحيحة</string>
+    <string name="ticker_unavailable">--</string>
+    <string name="ticker_offline">تعذر جلب الأسعار — تحقق من الاتصال</string>
+
+    <!-- Direction -->
+    <string name="direction_title">اتجاه التحويل</string>
+
+    <!-- Modes -->
+    <string name="mode_send_exact">إرسال محدد</string>
+    <string name="mode_receive_exact">استلام محدد</string>
+    <string name="mode_custom_deal">صفقة خاصة</string>
+
+    <!-- Inputs -->
+    <string name="input_base_amount">مبلغ المرسل</string>
+    <string name="input_target_received">المبلغ المستلم للمستفيد</string>
+    <string name="input_custom_base_received">المبلغ المستلم (الأساس)</string>
+    <string name="input_custom_target_delivered">المبلغ الواصل (الهدف)</string>
+    <string name="input_market_rate">سعر السوق</string>
+    <string name="input_customer_rate">سعر الزبون</string>
+    <string name="input_flat_fee">عمولة ثابتة</string>
+    <string name="input_pct_fee">عمولة نسبية %</string>
+    <string name="input_delivery_fee">أجرة التسليم</string>
+    <string name="input_flat_agent_cost">تكلفة المكتب الثابتة</string>
+    <string name="input_pct_agent_cost">تكلفة المكتب %</string>
+    <string name="fee_inclusive">العمولة ضمن المبلغ</string>
+    <string name="deduction_base">أساس التنزيل</string>
+    <string name="deduction_on_received">على المبلغ المستلم</string>
+    <string name="deduction_on_delivered">على المبلغ الواصل</string>
+    <string name="rates_locked">السعر مثبّت 1.0000 (نفس العملة)</string>
+
+    <!-- Validation -->
+    <string name="error_invalid_number">رقم غير صالح</string>
+    <string name="error_negative_value">لا يُسمح بالقيم السالبة</string>
+    <string name="error_fee_overflow">العمولات أكبر من المبلغ</string>
+    <string name="error_missing_rate">أدخل سعر صرف صحيح</string>
+
+    <!-- Results -->
+    <string name="results_title">النتائج</string>
+    <string name="result_principal">المبلغ الأساسي</string>
+    <string name="result_target_delivered">المبلغ الواصل</string>
+    <string name="result_total_paid">إجمالي المدفوع من الزبون</string>
+    <string name="result_total_received">صافي المستلم للمستفيد</string>
+    <string name="result_flat_fee">العمولة الثابتة</string>
+    <string name="result_pct_fee">العمولة النسبية</string>
+    <string name="result_hidden_spread">ربح فرق السعر</string>
+    <string name="result_agent_flat">تكلفة المكتب الثابتة</string>
+    <string name="result_agent_pct">تكلفة المكتب النسبية</string>
+    <string name="result_delivery_fee_base">أجرة التسليم (بعملة الأساس)</string>
+    <string name="result_net_profit">صافي الربح</string>
+
+    <!-- Updater -->
+    <string name="update_check">التحقق من التحديثات</string>
+    <string name="update_checking">جارٍ التحقق…</string>
+    <string name="update_up_to_date">التطبيق محدّث لآخر إصدار</string>
+    <string name="update_available_title">تحديث جديد متوفر</string>
+    <string name="update_current_version">الإصدار الحالي: %1$s</string>
+    <string name="update_new_version">الإصدار الجديد: %1$s</string>
+    <string name="update_download">تنزيل</string>
+    <string name="update_downloading">جارٍ التنزيل… %1$d%%</string>
+    <string name="update_install">تثبيت</string>
+    <string name="update_install_note">إذا طلب النظام السماح بالتثبيت من هذا المصدر، فعّل الخيار ثم ارجع واضغط تثبيت مرة أخرى.</string>
+    <string name="update_failed">فشل التحقق من التحديث — تحقق من الاتصال</string>
+    <string name="update_retry">إعادة المحاولة</string>
+
+    <!-- Common -->
+    <string name="action_language">English</string>
+    <string name="action_close">إغلاق</string>
+    <string name="action_cancel">إلغاء</string>
+    <string name="action_save">حفظ</string>
+    <string name="action_delete">حذف</string>
 </resources>

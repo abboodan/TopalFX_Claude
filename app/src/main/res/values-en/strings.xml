@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TopalFX Pro</string>
+
+    <!-- Ticker -->
+    <string name="ticker_title">Live Rates</string>
+    <string name="ticker_refresh">Refresh rates</string>
+    <string name="ticker_edit_pairs">Edit pairs</string>
+    <string name="ticker_add_pair">Add pair</string>
+    <string name="ticker_pair_hint">e.g. EUR/USD</string>
+    <string name="ticker_invalid_pair">Invalid pair format</string>
+    <string name="ticker_unavailable">--</string>
+    <string name="ticker_offline">Could not fetch rates — check connection</string>
+
+    <!-- Direction -->
+    <string name="direction_title">Transfer direction</string>
+
+    <!-- Modes -->
+    <string name="mode_send_exact">Send Exact</string>
+    <string name="mode_receive_exact">Receive Exact</string>
+    <string name="mode_custom_deal">Custom Deal</string>
+
+    <!-- Inputs -->
+    <string name="input_base_amount">Sender amount</string>
+    <string name="input_target_received">Amount received by beneficiary</string>
+    <string name="input_custom_base_received">Base amount received</string>
+    <string name="input_custom_target_delivered">Target amount delivered</string>
+    <string name="input_market_rate">Market rate</string>
+    <string name="input_customer_rate">Customer rate</string>
+    <string name="input_flat_fee">Flat fee</string>
+    <string name="input_pct_fee">Percentage fee %</string>
+    <string name="input_delivery_fee">Delivery fee</string>
+    <string name="input_flat_agent_cost">Flat office cost</string>
+    <string name="input_pct_agent_cost">Office cost %</string>
+    <string name="fee_inclusive">Fee inclusive</string>
+    <string name="deduction_base">Deduction base</string>
+    <string name="deduction_on_received">On received amount</string>
+    <string name="deduction_on_delivered">On delivered target</string>
+    <string name="rates_locked">Rate locked at 1.0000 (same currency)</string>
+
+    <!-- Validation -->
+    <string name="error_invalid_number">Invalid number</string>
+    <string name="error_negative_value">Negative values are not allowed</string>
+    <string name="error_fee_overflow">Fees exceed the amount</string>
+    <string name="error_missing_rate">Enter a valid exchange rate</string>
+
+    <!-- Results -->
+    <string name="results_title">Results</string>
+    <string name="result_principal">Principal amount</string>
+    <string name="result_target_delivered">Target delivered</string>
+    <string name="result_total_paid">Total paid by customer</string>
+    <string name="result_total_received">Net received by beneficiary</string>
+    <string name="result_flat_fee">Flat fee</string>
+    <string name="result_pct_fee">Percentage fee</string>
+    <string name="result_hidden_spread">Spread profit</string>
+    <string name="result_agent_flat">Flat office cost</string>
+    <string name="result_agent_pct">Office cost (pct)</string>
+    <string name="result_delivery_fee_base">Delivery fee (base currency)</string>
+    <string name="result_net_profit">Net profit</string>
+
+    <!-- Updater -->
+    <string name="update_check">Check for updates</string>
+    <string name="update_checking">Checking…</string>
+    <string name="update_up_to_date">App is up to date</string>
+    <string name="update_available_title">New update available</string>
+    <string name="update_current_version">Current version: %1$s</string>
+    <string name="update_new_version">New version: %1$s</string>
+    <string name="update_download">Download</string>
+    <string name="update_downloading">Downloading… %1$d%%</string>
+    <string name="update_install">Install</string>
+    <string name="update_install_note">If the system asks to allow installs from this source, enable it, come back, and tap Install again.</string>
+    <string name="update_failed">Update check failed — check connection</string>
+    <string name="update_retry">Retry</string>
+
+    <!-- Common -->
+    <string name="action_language">عربي</string>
+    <string name="action_close">Close</string>
+    <string name="action_cancel">Cancel</string>
+    <string name="action_save">Save</string>
+    <string name="action_delete">Delete</string>
+</resources>
