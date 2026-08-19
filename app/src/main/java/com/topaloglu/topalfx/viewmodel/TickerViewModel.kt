@@ -5,6 +5,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.topaloglu.topalfx.data.RatePair
 import com.topaloglu.topalfx.data.TickerRate
+import com.topaloglu.topalfx.data.TransferDirection
 import com.topaloglu.topalfx.network.RetrofitClient
 import com.topaloglu.topalfx.util.Prefs
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +48,13 @@ class TickerViewModel(app: Application) : AndroidViewModel(app) {
         viewModelScope.launch { refreshOnce() }
     }
 
+    /** Live market rate for a transfer direction, or null when unavailable. */
+    fun liveRate(direction: TransferDirection): Double? {
+        if (direction.isSameCurrency) return 1.0
+        val pair = RatePair(direction.base.name, direction.target.name)
+        return _rates.value[pair]?.rate?.takeIf { it > 0.0 }
+    }
+
     fun updatePairs(newPairs: List<RatePair>) {
         val cleaned = newPairs.distinct()
         Prefs.setTickerPairs(getApplication(), cleaned)
@@ -57,7 +65,9 @@ class TickerViewModel(app: Application) : AndroidViewModel(app) {
     private suspend fun refreshOnce() {
         _isRefreshing.value = true
         val now = System.currentTimeMillis()
-        val currentPairs = _pairs.value
+        // Calculator pairs are always fetched so the market rate can auto-fill even
+        // when the user removed them from the visible board.
+        val currentPairs = (_pairs.value + CALCULATOR_PAIRS).distinct()
         val result = mutableMapOf<RatePair, TickerRate>()
         var anyFailure = false
 
@@ -85,7 +95,15 @@ class TickerViewModel(app: Application) : AndroidViewModel(app) {
         }
 
         _rates.value = result
-        _hasError.value = anyFailure
+        // Only failures on pairs the user actually sees are surfaced on the board.
+        _hasError.value = anyFailure && _pairs.value.any { result[it]?.rate == 0.0 }
         _isRefreshing.value = false
+    }
+
+    private companion object {
+        val CALCULATOR_PAIRS = listOf(
+            RatePair("EUR", "USD"),
+            RatePair("USD", "EUR"),
+        )
     }
 }

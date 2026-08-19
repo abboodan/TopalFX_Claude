@@ -12,10 +12,33 @@ object MarginEngine {
     fun calculateProfit(rawInput: CalcInput): CalcResult {
         val input = normalize(rawInput)
         validate(input)?.let { return CalcResult(error = it) }
-        return when (input.mode) {
+        val result = when (input.mode) {
             CalcMode.SEND_EXACT -> sendExact(input)
             CalcMode.RECEIVE_EXACT -> receiveExact(input)
             CalcMode.CUSTOM_DEAL -> customDeal(input)
+        }
+        return withEurProfit(result, input)
+    }
+
+    /**
+     * The office fund is accounted in EUR, so the profit is unified to EUR after
+     * the transfer math is done in the direction's own base currency.
+     */
+    private fun withEurProfit(result: CalcResult, input: CalcInput): CalcResult {
+        val rate = eurPerBaseUnit(input) ?: return result
+        return result.copy(
+            eurConversionRate = rate,
+            netProfitEur = result.netProfitBase * rate,
+        )
+    }
+
+    private fun eurPerBaseUnit(input: CalcInput): Double? = when (input.direction.base) {
+        Currency.EUR -> 1.0
+        Currency.USD -> when {
+            input.usdToEurRate > 0.0 -> input.usdToEurRate
+            // USD➔EUR already carries EUR per USD in its market rate.
+            input.direction.target == Currency.EUR && input.marketRate > 0.0 -> input.marketRate
+            else -> null
         }
     }
 

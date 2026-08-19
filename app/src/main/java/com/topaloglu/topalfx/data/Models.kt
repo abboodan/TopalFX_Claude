@@ -1,6 +1,6 @@
 package com.topaloglu.topalfx.data
 
-enum class Currency { EUR, USD }
+enum class Currency(val symbol: String) { EUR("€"), USD("$") }
 
 enum class TransferDirection(val base: Currency, val target: Currency) {
     EUR_TO_USD(Currency.EUR, Currency.USD),
@@ -38,6 +38,11 @@ data class CalcInput(
     val deliveryFee: Double = 0.0,
     val flatAgentCost: Double = 0.0,
     val pctAgentCost: Double = 0.0,
+    /**
+     * Live EUR per 1 USD, used to express the office profit in EUR — the fund's
+     * accounting currency. 0.0 means unavailable (offline).
+     */
+    val usdToEurRate: Double = 0.0,
 )
 
 data class CalcResult(
@@ -52,6 +57,10 @@ data class CalcResult(
     val agentCostPctBase: Long = 0L,
     val deliveryFeeBase: Double = 0.0,
     val netProfitBase: Double = 0.0,
+    /** EUR per 1 unit of the direction's base currency; null when unavailable. */
+    val eurConversionRate: Double? = null,
+    /** Office profit unified to EUR; null when the live EUR rate is unavailable. */
+    val netProfitEur: Double? = null,
     val error: CalcError? = null,
 )
 

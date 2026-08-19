@@ -30,6 +30,7 @@
     <string name="input_flat_fee">عمولة ثابتة</string>
     <string name="input_pct_fee">عمولة نسبية %</string>
     <string name="input_delivery_fee">أجرة التسليم</string>
+    <string name="delivery_fee_currency_note">بعملة التحويل (%1$s) وتُوحَّد لليورو في الربح</string>
     <string name="input_flat_agent_cost">تكلفة المكتب الثابتة</string>
     <string name="input_pct_agent_cost">تكلفة المكتب %</string>
     <string name="fee_inclusive">العمولة ضمن المبلغ</string>
@@ -37,6 +38,27 @@
     <string name="deduction_on_received">على المبلغ المستلم</string>
     <string name="deduction_on_delivered">على المبلغ الواصل</string>
     <string name="rates_locked">السعر مثبّت 1.0000 (نفس العملة)</string>
+
+    <!-- Live rate binding -->
+    <string name="market_rate_live">مُعبأ تلقائياً من الأسعار الحية</string>
+    <string name="market_rate_manual">مُدخل يدوياً</string>
+    <string name="market_rate_sync">مزامنة مع السعر الحي</string>
+    <string name="customer_rate_discount">الخصم عن سعر السوق</string>
+    <string name="customer_rate_auto">تلقائي: سعر السوق ناقص %1$s</string>
+    <string name="customer_rate_manual">مُدخل يدوياً</string>
+    <string name="customer_rate_discount_chip">‎−%1$s</string>
+    <string name="settings_default_customer_discount">الخصم الافتراضي عن سعر السوق</string>
+
+    <!-- Settings -->
+    <string name="settings_title">الإعدادات</string>
+    <string name="settings_defaults_section">القيم الافتراضية للمكتب</string>
+    <string name="settings_defaults_hint">تُطبّق تلقائياً على كل حوالة جديدة بدل إعادة كتابتها في كل مرة.</string>
+    <string name="settings_default_pct_agent">نسبة التنزيل الافتراضية %</string>
+    <string name="settings_default_flat_agent">تكلفة المكتب الثابتة الافتراضية</string>
+    <string name="settings_default_deduction">أساس التنزيل الافتراضي</string>
+    <string name="settings_saved">تم حفظ الإعدادات</string>
+    <string name="action_settings">الإعدادات</string>
+    <string name="action_back">رجوع</string>
 
     <!-- Validation -->
     <string name="error_invalid_number">رقم غير صالح</string>
@@ -57,6 +79,9 @@
     <string name="result_agent_pct">تكلفة المكتب النسبية</string>
     <string name="result_delivery_fee_base">أجرة التسليم (بعملة الأساس)</string>
     <string name="result_net_profit">صافي الربح</string>
+    <string name="result_profit_section">تفاصيل الربح (%1$s)</string>
+    <string name="result_net_profit_base">يعادل %1$s %2$s بعملة الحوالة</string>
+    <string name="result_eur_unavailable">سعر اليورو الحي غير متوفر — الأرقام معروضة بعملة الأساس</string>
 
     <!-- Updater -->
     <string name="update_check">التحقق من التحديثات</string>

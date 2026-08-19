@@ -30,6 +30,7 @@
     <string name="input_flat_fee">Flat fee</string>
     <string name="input_pct_fee">Percentage fee %</string>
     <string name="input_delivery_fee">Delivery fee</string>
+    <string name="delivery_fee_currency_note">In the transfer currency (%1$s), unified to EUR in the profit</string>
     <string name="input_flat_agent_cost">Flat office cost</string>
     <string name="input_pct_agent_cost">Office cost %</string>
     <string name="fee_inclusive">Fee inclusive</string>
@@ -37,6 +38,27 @@
     <string name="deduction_on_received">On received amount</string>
     <string name="deduction_on_delivered">On delivered target</string>
     <string name="rates_locked">Rate locked at 1.0000 (same currency)</string>
+
+    <!-- Live rate binding -->
+    <string name="market_rate_live">Auto-filled from live rates</string>
+    <string name="market_rate_manual">Entered manually</string>
+    <string name="market_rate_sync">Sync with live rate</string>
+    <string name="customer_rate_discount">Discount off market rate</string>
+    <string name="customer_rate_auto">Auto: market rate minus %1$s</string>
+    <string name="customer_rate_manual">Entered manually</string>
+    <string name="customer_rate_discount_chip">‎−%1$s</string>
+    <string name="settings_default_customer_discount">Default discount off market rate</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_defaults_section">Office defaults</string>
+    <string name="settings_defaults_hint">Applied automatically to every new transfer instead of retyping them each time.</string>
+    <string name="settings_default_pct_agent">Default office cost %</string>
+    <string name="settings_default_flat_agent">Default flat office cost</string>
+    <string name="settings_default_deduction">Default deduction base</string>
+    <string name="settings_saved">Settings saved</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_back">Back</string>
 
     <!-- Validation -->
     <string name="error_invalid_number">Invalid number</string>
@@ -57,6 +79,9 @@
     <string name="result_agent_pct">Office cost (pct)</string>
     <string name="result_delivery_fee_base">Delivery fee (base currency)</string>
     <string name="result_net_profit">Net profit</string>
+    <string name="result_profit_section">Profit breakdown (%1$s)</string>
+    <string name="result_net_profit_base">Equals %1$s %2$s in the transfer currency</string>
+    <string name="result_eur_unavailable">Live EUR rate unavailable — figures shown in the base currency</string>
 
     <!-- Updater -->
     <string name="update_check">Check for updates</string>

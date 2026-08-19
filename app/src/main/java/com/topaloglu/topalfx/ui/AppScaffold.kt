@@ -1,5 +1,6 @@
 package com.topaloglu.topalfx.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -7,11 +8,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -19,17 +24,24 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.topaloglu.topalfx.R
+import com.topaloglu.topalfx.data.TransferDirection
 import com.topaloglu.topalfx.ui.calculator.CalculatorScreen
+import com.topaloglu.topalfx.ui.settings.SettingsScreen
 import com.topaloglu.topalfx.ui.ticker.TickerBoard
 import com.topaloglu.topalfx.ui.updater.UpdateDialog
 import com.topaloglu.topalfx.viewmodel.CalculatorViewModel
 import com.topaloglu.topalfx.viewmodel.TickerViewModel
 import com.topaloglu.topalfx.viewmodel.UpdateViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,27 +57,70 @@ fun AppScaffold(
     val isRefreshing by tickerViewModel.isRefreshing.collectAsState()
     val hasError by tickerViewModel.hasError.collectAsState()
 
+    var showSettings by remember { mutableStateOf(false) }
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+    val settingsSavedMessage = stringResource(R.string.settings_saved)
+
+    // Market rate follows the live ticker for the selected direction.
+    val liveMarketRate = tickerViewModel.liveRate(calculatorState.direction)
+    LaunchedEffect(liveMarketRate, calculatorState.direction) {
+        calculatorViewModel.onLiveMarketRate(liveMarketRate)
+    }
+    // EUR conversion for the profit line, needed when the base currency is USD.
+    val liveUsdToEur = tickerViewModel.liveRate(TransferDirection.USD_TO_EUR)
+    LaunchedEffect(liveUsdToEur) {
+        calculatorViewModel.onLiveUsdToEurRate(liveUsdToEur)
+    }
+
     LaunchedEffect(Unit) {
         updateViewModel.checkForUpdate(silent = true)
     }
 
+    BackHandler(enabled = showSettings) { showSettings = false }
+
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.app_name)) },
-                actions = {
-                    TextButton(onClick = onToggleLanguage) {
-                        Text(stringResource(R.string.action_language))
-                    }
-                    IconButton(onClick = { updateViewModel.checkForUpdate() }) {
-                        Icon(
-                            Icons.Filled.SystemUpdate,
-                            contentDescription = stringResource(R.string.update_check),
+                title = {
+                    Text(
+                        stringResource(
+                            if (showSettings) R.string.settings_title else R.string.app_name
                         )
+                    )
+                },
+                navigationIcon = {
+                    if (showSettings) {
+                        IconButton(onClick = { showSettings = false }) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = stringResource(R.string.action_back),
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    if (!showSettings) {
+                        TextButton(onClick = onToggleLanguage) {
+                            Text(stringResource(R.string.action_language))
+                        }
+                        IconButton(onClick = { showSettings = true }) {
+                            Icon(
+                                Icons.Filled.Settings,
+                                contentDescription = stringResource(R.string.action_settings),
+                            )
+                        }
+                        IconButton(onClick = { updateViewModel.checkForUpdate() }) {
+                            Icon(
+                                Icons.Filled.SystemUpdate,
+                                contentDescription = stringResource(R.string.update_check),
+                            )
+                        }
                     }
                 },
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -75,18 +130,29 @@ fun AppScaffold(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
         ) {
-            TickerBoard(
-                pairs = pairs,
-                rates = rates,
-                isRefreshing = isRefreshing,
-                hasError = hasError,
-                onRefresh = tickerViewModel::manualRefresh,
-                onUpdatePairs = tickerViewModel::updatePairs,
-            )
-            CalculatorScreen(
-                state = calculatorState,
-                viewModel = calculatorViewModel,
-            )
+            if (showSettings) {
+                SettingsScreen(
+                    onSaved = {
+                        calculatorViewModel.applyDefaults()
+                        showSettings = false
+                        scope.launch { snackbarHostState.showSnackbar(settingsSavedMessage) }
+                    },
+                )
+            } else {
+                TickerBoard(
+                    pairs = pairs,
+                    rates = rates,
+                    isRefreshing = isRefreshing,
+                    hasError = hasError,
+                    onRefresh = tickerViewModel::manualRefresh,
+                    onUpdatePairs = tickerViewModel::updatePairs,
+                )
+                CalculatorScreen(
+                    state = calculatorState,
+                    viewModel = calculatorViewModel,
+                    liveMarketRate = liveMarketRate,
+                )
+            }
         }
     }
 
