@@ -19,11 +19,9 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -100,7 +98,12 @@ fun CalculatorScreen(
         }
 
         state.result?.takeIf { it.error == null }?.let { result ->
-            ResultsCard(result = result, direction = state.direction, mode = state.mode)
+            ResultsCard(
+                result = result,
+                direction = state.direction,
+                mode = state.mode,
+                lastCalculatedAt = state.lastCalculatedAt,
+            )
         }
     }
 }
@@ -114,8 +117,11 @@ private fun ModeInputs(
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
         when (state.mode) {
             CalcMode.SEND_EXACT -> {
+                // The switch changes what this number MEANS, so the label has to follow it.
                 NumberField(
-                    state, viewModel, InputField.BASE_AMOUNT, R.string.input_base_amount,
+                    state, viewModel, InputField.BASE_AMOUNT,
+                    if (state.feeInclusive) R.string.input_cash_received
+                    else R.string.input_transfer_amount,
                     currency = state.direction.base,
                 )
                 FeeInclusiveSwitch(state, viewModel)
@@ -248,11 +254,8 @@ private fun MarketRateField(
 
 @Composable
 private fun CustomerFeeFields(state: CalculatorUiState, viewModel: CalculatorViewModel) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        NumberField(state, viewModel, InputField.FLAT_FEE, R.string.input_flat_fee, modifier = Modifier.weight(1f))
-        NumberField(state, viewModel, InputField.PCT_FEE, R.string.input_pct_fee, modifier = Modifier.weight(1f))
-    }
-    // Delivery fee is always charged in the currency the money is delivered in.
+    NumberField(state, viewModel, InputField.PCT_FEE, R.string.input_pct_fee)
+    // The paying office sets this as a flat amount in the currency it hands over.
     NumberField(
         state, viewModel, InputField.DELIVERY_FEE, R.string.input_delivery_fee,
         currency = state.direction.target,
@@ -262,10 +265,7 @@ private fun CustomerFeeFields(state: CalculatorUiState, viewModel: CalculatorVie
 
 @Composable
 private fun AgentCostFields(state: CalculatorUiState, viewModel: CalculatorViewModel) {
-    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-        NumberField(state, viewModel, InputField.FLAT_AGENT_COST, R.string.input_flat_agent_cost, modifier = Modifier.weight(1f))
-        NumberField(state, viewModel, InputField.PCT_AGENT_COST, R.string.input_pct_agent_cost, modifier = Modifier.weight(1f))
-    }
+    NumberField(state, viewModel, InputField.PCT_AGENT_COST, R.string.input_pct_agent_cost)
     Text(
         text = stringResource(R.string.deduction_base),
         style = MaterialTheme.typography.titleSmall,
@@ -291,20 +291,12 @@ private fun AgentCostFields(state: CalculatorUiState, viewModel: CalculatorViewM
 
 @Composable
 private fun FeeInclusiveSwitch(state: CalculatorUiState, viewModel: CalculatorViewModel) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween,
-    ) {
-        Text(
-            text = stringResource(R.string.fee_inclusive),
-            style = MaterialTheme.typography.bodyLarge,
-        )
-        Switch(
-            checked = state.feeInclusive,
-            onCheckedChange = viewModel::onFeeInclusiveChanged,
-        )
-    }
+    LabeledSwitchRow(
+        label = stringResource(R.string.fee_inclusive),
+        checked = state.feeInclusive,
+        onCheckedChange = viewModel::onFeeInclusiveChanged,
+        supportingText = stringResource(R.string.fee_inclusive_hint),
+    )
 }
 
 @Composable

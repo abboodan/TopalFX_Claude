@@ -9,6 +9,7 @@ import com.topaloglu.topalfx.data.TransferDirection
 import com.topaloglu.topalfx.network.RetrofitClient
 import com.topaloglu.topalfx.util.Prefs
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -44,9 +45,8 @@ class TickerViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun manualRefresh() {
-        viewModelScope.launch { refreshOnce() }
-    }
+    /** Returns the running fetch so a caller that needs to act afterwards can join it. */
+    fun manualRefresh(): Job = viewModelScope.launch { refreshOnce() }
 
     /** Live market rate for a transfer direction, or null when unavailable. */
     fun liveRate(direction: TransferDirection): Double? {

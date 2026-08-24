@@ -1,0 +1,607 @@
+<title>هوية TopalFX البصرية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root {
+  --ground:      #F5F7FA;
+  --surface:     #FFFFFF;
+  --surface-alt: #EDF0F5;
+  --ink:         #11151B;
+  --ink-soft:    #4E5866;
+  --ink-faint:   #7C8695;
+  --line:        #DCE1E9;
+  --line-strong: #C3CAD6;
+  --steel:       #3A4552;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:      #0C0F14;
+    --surface:     #151A21;
+    --surface-alt: #1D242D;
+    --ink:         #E9EDF3;
+    --ink-soft:    #A2ACBA;
+    --ink-faint:   #6F7987;
+    --line:        #262E38;
+    --line-strong: #363F4B;
+    --steel:       #C6CEDA;
+  }
+}
+:root[data-theme="dark"] {
+  --ground:      #0C0F14;
+  --surface:     #151A21;
+  --surface-alt: #1D242D;
+  --ink:         #E9EDF3;
+  --ink-soft:    #A2ACBA;
+  --ink-faint:   #6F7987;
+  --line:        #262E38;
+  --line-strong: #363F4B;
+  --steel:       #C6CEDA;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  font-weight: 400;
+  line-height: 1.7;
+  direction: rtl;
+  -webkit-font-smoothing: antialiased;
+}
+
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 56px 24px 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+/* ---------- header ---------- */
+.head { display: flex; flex-direction: column; gap: 14px; }
+.eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .72rem;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  direction: ltr;
+  text-align: right;
+}
+h1 {
+  margin: 0;
+  font-size: clamp(1.9rem, 4.5vw, 2.7rem);
+  font-weight: 600;
+  letter-spacing: -.01em;
+  text-wrap: balance;
+}
+.lede {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 1.05rem;
+  color: var(--ink-soft);
+  font-weight: 300;
+}
+
+/* ---------- direction group ---------- */
+.group { display: flex; flex-direction: column; gap: 20px; }
+.group-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line-strong);
+}
+.group-head h2 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+.group-head span {
+  font-size: .85rem;
+  color: var(--ink-faint);
+  font-weight: 300;
+}
+
+/* ---------- concept card ---------- */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 28px;
+  align-items: start;
+}
+@media (max-width: 720px) {
+  .card { grid-template-columns: 1fr; gap: 22px; }
+}
+
+.previews { display: flex; flex-direction: column; gap: 14px; align-items: center; }
+
+.icon-big {
+  width: 132px; height: 132px;
+  border-radius: 29px;
+  overflow: hidden;
+  display: block;
+  box-shadow: 0 2px 10px rgb(0 0 0 / .16);
+}
+
+.small-row { display: flex; gap: 10px; }
+.chip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 11px 13px;
+  border-radius: 9px;
+  border: 1px solid var(--line);
+}
+.chip.light { background: #FFFFFF; }
+.chip.dark  { background: #0E1116; border-color: #2A323C; }
+
+.icon-48 { width: 48px; height: 48px; border-radius: 11px; overflow: hidden; display: block; }
+.icon-24 { width: 24px; height: 24px; border-radius: 5.5px; overflow: hidden; display: block; }
+
+.size-note {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .68rem;
+  color: var(--ink-faint);
+  direction: ltr;
+  letter-spacing: .04em;
+}
+
+/* ---------- info column ---------- */
+.info { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+.title-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.num {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .78rem;
+  font-weight: 600;
+  color: var(--surface);
+  background: var(--steel);
+  width: 26px; height: 26px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.title-row h3 {
+  margin: 0;
+  font-size: 1.22rem;
+  font-weight: 600;
+  font-family: "IBM Plex Mono", monospace;
+  letter-spacing: -.01em;
+  direction: ltr;
+}
+.rationale { margin: 0; color: var(--ink-soft); font-weight: 300; max-width: 56ch; }
+
+.lockups { display: flex; flex-wrap: wrap; gap: 10px; }
+.lockup {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  direction: ltr;
+}
+.lockup.light { background: #FFFFFF; }
+.lockup.dark  { background: #0E1116; border-color: #2A323C; }
+.lockup .icon-32 { width: 32px; height: 32px; border-radius: 7.5px; overflow: hidden; display: block; flex: none; }
+.wordmark {
+  font-family: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  font-size: 1.12rem;
+  font-weight: 600;
+  letter-spacing: -.02em;
+}
+.lockup.light .wordmark { color: #11151B; }
+.lockup.dark  .wordmark { color: #F2F5F9; }
+
+.swatches { display: flex; gap: 8px; flex-wrap: wrap; }
+.sw {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .72rem;
+  color: var(--ink-soft);
+  direction: ltr;
+  background: var(--surface-alt);
+  padding: 5px 10px 5px 6px;
+  border-radius: 20px;
+}
+.dot { width: 14px; height: 14px; border-radius: 50%; flex: none; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .18); }
+
+/* ---------- footnote ---------- */
+.note {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-inline-start: 3px solid var(--steel);
+  border-radius: 12px;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.note h2 { margin: 0; font-size: 1.02rem; font-weight: 600; }
+.note ul { margin: 0; padding-inline-start: 20px; display: flex; flex-direction: column; gap: 7px; }
+.note li { color: var(--ink-soft); font-weight: 300; }
+.note code {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .84em;
+  background: var(--surface-alt);
+  padding: 1px 5px;
+  border-radius: 4px;
+  direction: ltr;
+  display: inline-block;
+}
+</style>
+
+<!-- ============ icon symbol definitions ============ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="teal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#14B8A6"/>
+      <stop offset="100%" stop-color="#0F766E"/>
+    </linearGradient>
+
+    <!-- 1 · T-Arrow -->
+    <symbol id="ic1" viewBox="0 0 108 108">
+      <rect width="108" height="108" fill="url(#teal)"/>
+      <g fill="#FFFFFF">
+        <path d="M23 38 L36 27 L36 49 Z"/>
+        <path d="M85 38 L72 27 L72 49 Z"/>
+        <rect x="34" y="32.5" width="40" height="11" rx="2"/>
+        <rect x="47.5" y="43" width="13" height="39" rx="2.5"/>
+      </g>
+    </symbol>
+
+    <!-- 2 · T-Swoosh -->
+    <symbol id="ic2" viewBox="0 0 108 108">
+      <rect width="108" height="108" fill="url(#teal)"/>
+      <g fill="none" stroke="#FFFFFF" stroke-width="12.5" stroke-linecap="round">
+        <path d="M29 33 H79"/>
+        <path d="M54 33 V63 C54 79 70 80 80 67"/>
+      </g>
+    </symbol>
+
+    <!-- 3 · Shield T -->
+    <symbol id="ic3" viewBox="0 0 108 108">
+      <rect width="108" height="108" fill="#0B2545"/>
+      <path d="M54 24 L80 36 L80 56 C80 71 66 82 54 86 C42 82 28 71 28 56 L28 36 Z"
+            fill="none" stroke="#C9A227" stroke-width="4.5" stroke-linejoin="round"/>
+      <g fill="#C9A227">
+        <rect x="39" y="42" width="30" height="8.5" rx="1.5"/>
+        <rect x="49.5" y="50" width="9" height="25" rx="1.5"/>
+      </g>
+    </symbol>
+
+    <!-- 4 · Coin T -->
+    <symbol id="ic4" viewBox="0 0 108 108">
+      <rect width="108" height="108" fill="#0B2545"/>
+      <circle cx="54" cy="54" r="32" fill="#C9A227"/>
+      <circle cx="54" cy="54" r="26.5" fill="none" stroke="#0B2545" stroke-width="2.5" opacity=".3"/>
+      <g fill="#0B2545">
+        <rect x="39" y="41" width="30" height="9.5" rx="1.5"/>
+        <rect x="49" y="50" width="10" height="25" rx="1.5"/>
+      </g>
+    </symbol>
+
+    <!-- 5 · €$ Fusion -->
+    <symbol id="ic5" viewBox="0 0 108 108">
+      <rect width="108" height="108" fill="#1E3A8A"/>
+      <rect x="49.5" y="23" width="9" height="62" rx="4.5" fill="#F59E0B"/>
+      <text x="54" y="55" text-anchor="middle" dominant-baseline="central"
+            fill="#FFFFFF" font-family="IBM Plex Mono, monospace"
+            font-size="66" font-weight="600">€</text>
+    </symbol>
+
+    <!-- 6 · Exchange Loop -->
+    <symbol id="ic6" viewBox="0 0 108 108">
+      <rect width="108" height="108" fill="#1E3A8A"/>
+      <g fill="none" stroke-width="5.5" stroke-linecap="round">
+        <path d="M67 30 A 25 25 0 0 1 79 51" stroke="#F59E0B"/>
+        <path d="M41 78 A 25 25 0 0 1 29 57" stroke="#FFFFFF"/>
+      </g>
+      <path d="M83 55 L74 47 L86 44 Z" fill="#F59E0B"/>
+      <path d="M25 53 L34 61 L22 64 Z" fill="#FFFFFF"/>
+      <text x="41" y="45" text-anchor="middle" dominant-baseline="central"
+            fill="#FFFFFF" font-family="IBM Plex Mono, monospace"
+            font-size="38" font-weight="600">€</text>
+      <text x="69" y="66" text-anchor="middle" dominant-baseline="central"
+            fill="#F59E0B" font-family="IBM Plex Mono, monospace"
+            font-size="38" font-weight="600">$</text>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="wrap">
+
+  <header class="head">
+    <div class="eyebrow">TopalFX · Brand Concepts</div>
+    <h1>ستة نماذج للأيقونة واللوغو</h1>
+    <p class="lede">
+      كل نموذج معروض بحجمه الحقيقي على الشاشة: <strong>132</strong> بكسل كما يظهر في المتجر،
+      و<strong>48</strong> كما يظهر على شاشة الهاتف، و<strong>24</strong> كما يظهر في شريط الإشعارات —
+      على خلفية فاتحة وداكنة معًا. اختَر بالرقم.
+    </p>
+  </header>
+
+  <!-- ================= DIRECTION 1 ================= -->
+  <section class="group">
+    <div class="group-head">
+      <h2>عصري بسيط</h2>
+      <span>أشكال هندسية نظيفة · تركوازي</span>
+    </div>
+
+    <article class="card">
+      <div class="previews">
+        <svg class="icon-big" role="img" aria-label="نموذج T-Arrow بحجم كبير"><use href="#ic1"/></svg>
+        <div class="small-row">
+          <div class="chip light">
+            <svg class="icon-48" role="img" aria-label="T-Arrow على خلفية فاتحة"><use href="#ic1"/></svg>
+            <svg class="icon-24" role="img" aria-label="T-Arrow صغير على خلفية فاتحة"><use href="#ic1"/></svg>
+          </div>
+          <div class="chip dark">
+            <svg class="icon-48" role="img" aria-label="T-Arrow على خلفية داكنة"><use href="#ic1"/></svg>
+            <svg class="icon-24" role="img" aria-label="T-Arrow صغير على خلفية داكنة"><use href="#ic1"/></svg>
+          </div>
+        </div>
+        <div class="size-note">132 / 48 / 24 px</div>
+      </div>
+
+      <div class="info">
+        <div class="title-row"><span class="num">1</span><h3>T-Arrow</h3></div>
+        <p class="rationale">
+          حرف T تتحوّل عارضته الأفقية إلى سهم ثنائي الاتجاه — فكرة التحويل نفسها مرسومة داخل الحرف.
+          أوضح النماذج عند الحجم الصغير لأنه كتل صُلبة بلا تفاصيل رفيعة.
+        </p>
+        <div class="lockups">
+          <div class="lockup light">
+            <svg class="icon-32" role="img" aria-label="لوغو أفقي فاتح"><use href="#ic1"/></svg>
+            <span class="wordmark">TopalFX</span>
+          </div>
+          <div class="lockup dark">
+            <svg class="icon-32" role="img" aria-label="لوغو أفقي داكن"><use href="#ic1"/></svg>
+            <span class="wordmark">TopalFX</span>
+          </div>
+        </div>
+        <div class="swatches">
+          <span class="sw"><span class="dot" style="background:#14B8A6"></span>#14B8A6</span>
+          <span class="sw"><span class="dot" style="background:#0F766E"></span>#0F766E</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="previews">
+        <svg class="icon-big" role="img" aria-label="نموذج T-Swoosh بحجم كبير"><use href="#ic2"/></svg>
+        <div class="small-row">
+          <div class="chip light">
+            <svg class="icon-48" role="img" aria-label="T-Swoosh على خلفية فاتحة"><use href="#ic2"/></svg>
+            <svg class="icon-24" role="img" aria-label="T-Swoosh صغير على خلفية فاتحة"><use href="#ic2"/></svg>
+          </div>
+          <div class="chip dark">
+            <svg class="icon-48" role="img" aria-label="T-Swoosh على خلفية داكنة"><use href="#ic2"/></svg>
+            <svg class="icon-24" role="img" aria-label="T-Swoosh صغير على خلفية داكنة"><use href="#ic2"/></svg>
+          </div>
+        </div>
+        <div class="size-note">132 / 48 / 24 px</div>
+      </div>
+
+      <div class="info">
+        <div class="title-row"><span class="num">2</span><h3>T-Swoosh</h3></div>
+        <p class="rationale">
+          حرف T بساق تنحني صاعدة نحو اليمين — حركة وصعود بدل السكون.
+          أكثر ليونة من الأول، لكن طرف المنحنى يرقّ قليلًا عند 24 بكسل.
+        </p>
+        <div class="lockups">
+          <div class="lockup light">
+            <svg class="icon-32" role="img" aria-label="لوغو أفقي فاتح"><use href="#ic2"/></svg>
+            <span class="wordmark">TopalFX</span>
+          </div>
+          <div class="lockup dark">
+            <svg class="icon-32" role="img" aria-label="لوغو أفقي داكن"><use href="#ic2"/></svg>
+            <span class="wordmark">TopalFX</span>
+          </div>
+        </div>
+        <div class="swatches">
+          <span class="sw"><span class="dot" style="background:#14B8A6"></span>#14B8A6</span>
+          <span class="sw"><span class="dot" style="background:#0F766E"></span>#0F766E</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= DIRECTION 2 ================= -->
+  <section class="group">
+    <div class="group-head">
+      <h2>مالي كلاسيكي</h2>
+      <span>ثقة ورصانة · كحلي وذهبي</span>
+    </div>
+
+    <article class="card">
+      <div class="previews">
+        <svg class="icon-big" role="img" aria-label="نموذج Shield T بحجم كبير"><use href="#ic3"/></svg>
+        <div class="small-row">
+          <div class="chip light">
+            <svg class="icon-48" role="img" aria-label="Shield T على خلفية فاتحة"><use href="#ic3"/></svg>
+            <svg class="icon-24" role="img" aria-label="Shield T صغير على خلفية فاتحة"><use href="#ic3"/></svg>
+          </div>
+          <div class="chip dark">
+            <svg class="icon-48" role="img" aria-label="Shield T على خلفية داكنة"><use href="#ic3"/></svg>
+            <svg class="icon-24" role="img" aria-label="Shield T صغير على خلفية داكنة"><use href="#ic3"/></svg>
+          </div>
+        </div>
+        <div class="size-note">132 / 48 / 24 px</div>
+      </div>
+
+      <div class="info">
+        <div class="title-row"><span class="num">3</span><h3>Shield T</h3></div>
+        <p class="rationale">
+          درع بحرف T ذهبي — لغة الأمان والائتمان التي يعرفها زبون الحوالات.
+          أقوى النماذج في إيصال «مالك بأمان»، لكنه الأكثر تفصيلًا: خط الدرع يضعف عند 24 بكسل.
+        </p>
+        <div class="lockups">
+          <div class="lockup light">
+            <svg class="icon-32" role="img" aria-label="لوغو أفقي فاتح"><use href="#ic3"/></svg>
+            <span class="wordmark">TopalFX</span>
+          </div>
+          <div class="lockup dark">
+            <svg class="icon-32" role="img" aria-label="لوغو أفقي داكن"><use href="#ic3"/></svg>
+            <span class="wordmark">TopalFX</span>
+          </div>
+        </div>
+        <div class="swatches">
+          <span class="sw"><span class="dot" style="background:#0B2545"></span>#0B2545</span>
+          <span class="sw"><span class="dot" style="background:#C9A227"></span>#C9A227</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="previews">
+        <svg class="icon-big" role="img" aria-label="نموذج Coin T بحجم كبير"><use href="#ic4"/></svg>
+        <div class="small-row">
+          <div class="chip light">
+            <svg class="icon-48" role="img" aria-label="Coin T على خلفية فاتحة"><use href="#ic4"/></svg>
+            <svg class="icon-24" role="img" aria-label="Coin T صغير على خلفية فاتحة"><use href="#ic4"/></svg>
+          </div>
+          <div class="chip dark">
+            <svg class="icon-48" role="img" aria-label="Coin T على خلفية داكنة"><use href="#ic4"/></svg>
+            <svg class="icon-24" role="img" aria-label="Coin T صغير على خلفية داكنة"><use href="#ic4"/></svg>
+          </div>
+        </div>
+        <div class="size-note">132 / 48 / 24 px</div>
+      </div>
+
+      <div class="info">
+        <div class="title-row"><span class="num">4</span><h3>Coin T</h3></div>
+        <p class="rationale">
+          قرص ذهبي محفور بحلقة داخلية وحرف T بارز — عملة معدنية مباشرة.
+          الشكل الدائري يبقى واضحًا في كل الأحجام، والذهبي على الكحلي أعلى تباينًا من كل النماذج.
+        </p>
+        <div class="lockups">
+          <div class="lockup light">
+            <svg class="icon-32" role="img" aria-label="لوغو أفقي فاتح"><use href="#ic4"/></svg>
+            <span class="wordmark">TopalFX</span>
+          </div>
+          <div class="lockup dark">
+            <svg class="icon-32" role="img" aria-label="لوغو أفقي داكن"><use href="#ic4"/></svg>
+            <span class="wordmark">TopalFX</span>
+          </div>
+        </div>
+        <div class="swatches">
+          <span class="sw"><span class="dot" style="background:#0B2545"></span>#0B2545</span>
+          <span class="sw"><span class="dot" style="background:#C9A227"></span>#C9A227</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= DIRECTION 3 ================= -->
+  <section class="group">
+    <div class="group-head">
+      <h2>رمز العملات المباشر</h2>
+      <span>يوصل الوظيفة بلا شرح · أزرق وكهرماني</span>
+    </div>
+
+    <article class="card">
+      <div class="previews">
+        <svg class="icon-big" role="img" aria-label="نموذج يورو دولار مدمج بحجم كبير"><use href="#ic5"/></svg>
+        <div class="small-row">
+          <div class="chip light">
+            <svg class="icon-48" role="img" aria-label="يورو دولار مدمج على خلفية فاتحة"><use href="#ic5"/></svg>
+            <svg class="icon-24" role="img" aria-label="يورو دولار مدمج صغير على خلفية فاتحة"><use href="#ic5"/></svg>
+          </div>
+          <div class="chip dark">
+            <svg class="icon-48" role="img" aria-label="يورو دولار مدمج على خلفية داكنة"><use href="#ic5"/></svg>
+            <svg class="icon-24" role="img" aria-label="يورو دولار مدمج صغير على خلفية داكنة"><use href="#ic5"/></svg>
+          </div>
+        </div>
+        <div class="size-note">132 / 48 / 24 px</div>
+      </div>
+
+      <div class="info">
+        <div class="title-row"><span class="num">5</span><h3>€$ Fusion</h3></div>
+        <p class="rationale">
+          رمز اليورو تخترقه ساق الدولار العمودية — علامة واحدة مدموجة لا رمزين متجاورين،
+          فتبقى مقروءة عند الحجم الصغير. تقول «صرف عملات» من أول نظرة بلا أي شرح.
+        </p>
+        <div class="lockups">
+          <div class="lockup light">
+            <svg class="icon-32" role="img" aria-label="لوغو أفقي فاتح"><use href="#ic5"/></svg>
+            <span class="wordmark">TopalFX</span>
+          </div>
+          <div class="lockup dark">
+            <svg class="icon-32" role="img" aria-label="لوغو أفقي داكن"><use href="#ic5"/></svg>
+            <span class="wordmark">TopalFX</span>
+          </div>
+        </div>
+        <div class="swatches">
+          <span class="sw"><span class="dot" style="background:#1E3A8A"></span>#1E3A8A</span>
+          <span class="sw"><span class="dot" style="background:#F59E0B"></span>#F59E0B</span>
+        </div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="previews">
+        <svg class="icon-big" role="img" aria-label="نموذج حلقة التبادل بحجم كبير"><use href="#ic6"/></svg>
+        <div class="small-row">
+          <div class="chip light">
+            <svg class="icon-48" role="img" aria-label="حلقة التبادل على خلفية فاتحة"><use href="#ic6"/></svg>
+            <svg class="icon-24" role="img" aria-label="حلقة التبادل صغيرة على خلفية فاتحة"><use href="#ic6"/></svg>
+          </div>
+          <div class="chip dark">
+            <svg class="icon-48" role="img" aria-label="حلقة التبادل على خلفية داكنة"><use href="#ic6"/></svg>
+            <svg class="icon-24" role="img" aria-label="حلقة التبادل صغيرة على خلفية داكنة"><use href="#ic6"/></svg>
+          </div>
+        </div>
+        <div class="size-note">132 / 48 / 24 px</div>
+      </div>
+
+      <div class="info">
+        <div class="title-row"><span class="num">6</span><h3>Exchange Loop</h3></div>
+        <p class="rationale">
+          اليورو والدولار يدور بينهما سهمان — أغنى النماذج معنًى وأكثرها ازدحامًا.
+          انظر إليه عند 24 بكسل قبل أن تختاره: التفاصيل تتلاشى هناك أكثر من أي نموذج آخر.
+        </p>
+        <div class="lockups">
+          <div class="lockup light">
+            <svg class="icon-32" role="img" aria-label="لوغو أفقي فاتح"><use href="#ic6"/></svg>
+            <span class="wordmark">TopalFX</span>
+          </div>
+          <div class="lockup dark">
+            <svg class="icon-32" role="img" aria-label="لوغو أفقي داكن"><use href="#ic6"/></svg>
+            <span class="wordmark">TopalFX</span>
+          </div>
+        </div>
+        <div class="swatches">
+          <span class="sw"><span class="dot" style="background:#1E3A8A"></span>#1E3A8A</span>
+          <span class="sw"><span class="dot" style="background:#F59E0B"></span>#F59E0B</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ================= FOOTNOTE ================= -->
+  <aside class="note">
+    <h2>ملاحظات تقنية على التنفيذ</h2>
+    <ul>
+      <li>ما تراه هنا رسم <code>SVG</code>؛ النموذج المختار يُنفَّذ كـ <code>VectorDrawable XML</code> بطبقات خلفية وواجهة وظلّية أحادية اللون للأيقونات المُمَوضَعة.</li>
+      <li>لون التطبيق الداخلي لن يتغيّر إلا بضبط <code>dynamicColor = false</code> في <code>Theme.kt</code> — حاليًا يتجاوز نظام أندرويد أي لوحة ألوان ويأخذ ألوانه من خلفية شاشتك.</li>
+      <li>معرّف التطبيق <code>com.topaloglu.topalfx</code> يبقى كما هو؛ تغييره يكسر التحديث لكل نسخة مثبّتة.</li>
+      <li>يمكن دمج اتجاهين: مثلًا شكل النموذج 4 بألوان النموذج 1. قل الرقم واللون وأنفّذ.</li>
+    </ul>
+  </aside>
+
+</div>

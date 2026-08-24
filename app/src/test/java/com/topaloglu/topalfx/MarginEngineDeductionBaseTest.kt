@@ -7,86 +7,79 @@ import com.topaloglu.topalfx.data.MarginEngine
 import com.topaloglu.topalfx.data.TransferDirection
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class MarginEngineDeductionBaseTest {
 
+    private val delta = 1e-9
+
+    private fun input(base: DeductionBase) = CalcInput(
+        direction = TransferDirection.EUR_TO_USD,
+        mode = CalcMode.SEND_EXACT,
+        deductionBase = base,
+        feeInclusive = true,
+        baseAmount = 100.0,
+        marketRate = 1.1699,
+        customerRate = 1.1599,
+        pctFee = 5.0,
+        pctAgentCost = 2.5,
+    )
+
     @Test
-    fun `on received with EUR base rounds base amount percentage`() {
-        val result = MarginEngine.calculateProfit(
-            CalcInput(
-                direction = TransferDirection.EUR_TO_USD,
-                mode = CalcMode.SEND_EXACT,
-                deductionBase = DeductionBase.ON_RECEIVED,
-                baseAmount = 1000.0,
-                pctAgentCost = 1.5,
-                marketRate = 1.10,
-                customerRate = 1.05,
-            )
-        )
+    fun `on received charges the full cash taken in`() {
+        val result = MarginEngine.calculateProfit(input(DeductionBase.ON_RECEIVED))
         assertNull(result.error)
-        assertEquals(15L, result.agentCostPctBase)
+        assertEquals(2.5, result.agentCostBase, delta)   // 100 × 2.5%
     }
 
     @Test
-    fun `office cost always rounds half up to whole integer`() {
-        val result = MarginEngine.calculateProfit(
-            CalcInput(
-                direction = TransferDirection.EUR_TO_USD,
-                mode = CalcMode.SEND_EXACT,
-                deductionBase = DeductionBase.ON_RECEIVED,
-                baseAmount = 1000.0,
-                pctAgentCost = 0.25, // 2.5 → Math.round → 3
-                marketRate = 1.10,
-                customerRate = 1.05,
-            )
-        )
+    fun `on delivered charges the transfer amount`() {
+        val result = MarginEngine.calculateProfit(input(DeductionBase.ON_DELIVERED))
         assertNull(result.error)
-        assertEquals(3L, result.agentCostPctBase)
+        assertEquals(2.375, result.agentCostBase, delta) // 95 × 2.5%
+    }
+
+    /**
+     * The old engine ran every percentage cost through Math.round, so 2.5 became 3 —
+     * a 20% overstatement of the cost on a 100 EUR transfer, in a business that settles
+     * to the cent.
+     */
+    @Test
+    fun `the cost is never rounded to a whole unit`() {
+        val result = MarginEngine.calculateProfit(input(DeductionBase.ON_RECEIVED))
+        assertEquals(2.5, result.agentCostBase, 0.0)
+        assertTrue(result.agentCostBase != 3.0)
     }
 
     @Test
-    fun `on received with USD base derives cost from delivered target`() {
-        // Fee-inclusive makes the USD branch differ from the plain base amount:
-        // principal = (1000-100)/1.0 = 900, targetDelivered = 810,
-        // cost = round((810 * 2 / 100) / 0.9) = round(18.0) = 18 (not round(1000*2%) = 20).
+    fun `a fractional cost survives intact`() {
         val result = MarginEngine.calculateProfit(
-            CalcInput(
-                direction = TransferDirection.USD_TO_EUR,
-                mode = CalcMode.SEND_EXACT,
-                deductionBase = DeductionBase.ON_RECEIVED,
-                feeInclusive = true,
-                baseAmount = 1000.0,
-                flatFee = 100.0,
-                pctAgentCost = 2.0,
-                marketRate = 0.92,
-                customerRate = 0.90,
-            )
+            input(DeductionBase.ON_RECEIVED).copy(pctAgentCost = 2.37)
         )
-        assertNull(result.error)
-        assertEquals(18L, result.agentCostPctBase)
+        assertEquals(2.37, result.agentCostBase, delta)
+    }
+
+    /**
+     * Costs come out of the office's profit, so switching the deduction base must never
+     * change the number quoted to the customer.
+     */
+    @Test
+    fun `switching the base leaves the customer-facing figures untouched`() {
+        val onReceived = MarginEngine.calculateProfit(input(DeductionBase.ON_RECEIVED))
+        val onDelivered = MarginEngine.calculateProfit(input(DeductionBase.ON_DELIVERED))
+
+        assertEquals(onReceived.cashReceived, onDelivered.cashReceived, delta)
+        assertEquals(onReceived.transferAmount, onDelivered.transferAmount, delta)
+        assertEquals(onReceived.targetDelivered, onDelivered.targetDelivered, delta)
+        assertEquals(onReceived.customerFeeBase, onDelivered.customerFeeBase, delta)
+        assertEquals(onReceived.hiddenSpread, onDelivered.hiddenSpread, delta)
+        // Only the office's own cost — and therefore its profit — differs.
+        assertTrue(onDelivered.agentCostBase < onReceived.agentCostBase)
     }
 
     @Test
-    fun `on delivered target uses true cost at market rate`() {
-        val result = MarginEngine.calculateProfit(
-            CalcInput(
-                direction = TransferDirection.EUR_TO_USD,
-                mode = CalcMode.SEND_EXACT,
-                deductionBase = DeductionBase.ON_DELIVERED,
-                baseAmount = 1000.0,
-                pctAgentCost = 2.0,
-                marketRate = 1.10,
-                customerRate = 1.05,
-            )
-        )
-        assertNull(result.error)
-        // trueCost = 1050 / 1.10 = 954.5454..., cost = round(19.0909...) = 19
-        assertEquals(19L, result.agentCostPctBase)
-    }
-
-    @Test
-    fun `custom deal deduction uses received base amount`() {
+    fun `custom deal charges the received amount`() {
         val result = MarginEngine.calculateProfit(
             CalcInput(
                 direction = TransferDirection.EUR_TO_USD,
@@ -94,11 +87,11 @@ class MarginEngineDeductionBaseTest {
                 deductionBase = DeductionBase.ON_RECEIVED,
                 customBaseReceived = 1000.0,
                 customTargetDelivered = 1040.0,
-                pctAgentCost = 1.0,
                 marketRate = 1.10,
+                pctAgentCost = 1.0,
             )
         )
         assertNull(result.error)
-        assertEquals(10L, result.agentCostPctBase)
+        assertEquals(10.0, result.agentCostBase, delta)
     }
 }

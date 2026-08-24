@@ -21,22 +21,22 @@
     <string name="mode_custom_deal">Custom Deal</string>
 
     <!-- Inputs -->
-    <string name="input_base_amount">Sender amount</string>
+    <string name="input_cash_received">Cash received from customer</string>
+    <string name="input_transfer_amount">Transfer amount</string>
     <string name="input_target_received">Amount received by beneficiary</string>
     <string name="input_custom_base_received">Base amount received</string>
     <string name="input_custom_target_delivered">Target amount delivered</string>
     <string name="input_market_rate">Market rate</string>
     <string name="input_customer_rate">Customer rate</string>
-    <string name="input_flat_fee">Flat fee</string>
-    <string name="input_pct_fee">Percentage fee %</string>
-    <string name="input_delivery_fee">Delivery fee</string>
-    <string name="delivery_fee_currency_note">In the transfer currency (%1$s), unified to EUR in the profit</string>
-    <string name="input_flat_agent_cost">Flat office cost</string>
-    <string name="input_pct_agent_cost">Office cost %</string>
-    <string name="fee_inclusive">Fee inclusive</string>
+    <string name="input_pct_fee">Fee %</string>
+    <string name="input_delivery_fee">Paying office fee</string>
+    <string name="delivery_fee_currency_note">In the delivery currency (%1$s) — comes out of your profit, not the beneficiary\'s amount</string>
+    <string name="input_pct_agent_cost">Cash-to-digital %</string>
+    <string name="fee_inclusive">Fee included in amount</string>
+    <string name="fee_inclusive_hint">On: the amount you type is the cash the customer handed over</string>
     <string name="deduction_base">Deduction base</string>
-    <string name="deduction_on_received">On received amount</string>
-    <string name="deduction_on_delivered">On delivered target</string>
+    <string name="deduction_on_received">On cash received</string>
+    <string name="deduction_on_delivered">On transfer amount</string>
     <string name="rates_locked">Rate locked at 1.0000 (same currency)</string>
 
     <!-- Live rate binding -->
@@ -47,15 +47,29 @@
     <string name="customer_rate_auto">Auto: market rate minus %1$s</string>
     <string name="customer_rate_manual">Entered manually</string>
     <string name="customer_rate_discount_chip">‎−%1$s</string>
-    <string name="settings_default_customer_discount">Default discount off market rate</string>
+
+    <!-- Actions -->
+    <string name="action_calculate">Calculate</string>
+    <string name="action_reset">Reset</string>
+    <string name="action_undo">Undo</string>
+    <string name="calc_done">Recalculated — results are up to date</string>
+    <string name="calc_no_input">Enter an amount first</string>
+    <string name="reset_done">Reset — defaults restored, refreshing rates</string>
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
     <string name="settings_defaults_section">Office defaults</string>
     <string name="settings_defaults_hint">Applied automatically to every new transfer instead of retyping them each time.</string>
-    <string name="settings_default_pct_agent">Default office cost %</string>
-    <string name="settings_default_flat_agent">Default flat office cost</string>
+    <string name="settings_section_transfer">Transfer defaults</string>
+    <string name="settings_section_fees">Customer fees</string>
+    <string name="settings_section_costs">Office costs</string>
+    <string name="settings_default_direction">Default transfer direction</string>
+    <string name="settings_default_mode">Default calculation mode</string>
+    <string name="settings_default_pct_fee">Default fee %</string>
+    <string name="settings_default_fee_inclusive">Fee included in amount by default</string>
+    <string name="settings_default_pct_agent">Default cash-to-digital %</string>
     <string name="settings_default_deduction">Default deduction base</string>
+    <string name="settings_default_customer_discount">Default discount off market rate</string>
     <string name="settings_saved">Settings saved</string>
     <string name="action_settings">Settings</string>
     <string name="action_back">Back</string>
@@ -63,25 +77,25 @@
     <!-- Validation -->
     <string name="error_invalid_number">Invalid number</string>
     <string name="error_negative_value">Negative values are not allowed</string>
-    <string name="error_fee_overflow">Fees exceed the amount</string>
+    <string name="error_fee_overflow">The fee must be under 100%</string>
     <string name="error_missing_rate">Enter a valid exchange rate</string>
 
     <!-- Results -->
     <string name="results_title">Results</string>
-    <string name="result_principal">Principal amount</string>
-    <string name="result_target_delivered">Target delivered</string>
-    <string name="result_total_paid">Total paid by customer</string>
-    <string name="result_total_received">Net received by beneficiary</string>
-    <string name="result_flat_fee">Flat fee</string>
-    <string name="result_pct_fee">Percentage fee</string>
+    <string name="result_cash_received">Cash received</string>
+    <string name="result_transfer_amount">Transfer amount</string>
+    <string name="result_target_delivered">Received by beneficiary</string>
+    <string name="result_pct_fee">Fee</string>
     <string name="result_hidden_spread">Spread profit</string>
-    <string name="result_agent_flat">Flat office cost</string>
-    <string name="result_agent_pct">Office cost (pct)</string>
-    <string name="result_delivery_fee_base">Delivery fee (base currency)</string>
+    <string name="result_agent_pct">Cash-to-digital cost</string>
+    <string name="result_delivery_fee_base">Paying office fee (from profit)</string>
     <string name="result_net_profit">Net profit</string>
     <string name="result_profit_section">Profit breakdown (%1$s)</string>
     <string name="result_net_profit_base">Equals %1$s %2$s in the transfer currency</string>
     <string name="result_eur_unavailable">Live EUR rate unavailable — figures shown in the base currency</string>
+    <string name="result_break_even">Negative profit — minimum fee to break even: %1$s%%</string>
+    <string name="result_negative_profit">Negative profit — review the rate and costs</string>
+    <string name="result_last_calculated">Last calculated: %1$s</string>
 
     <!-- Updater -->
     <string name="update_check">Check for updates</string>

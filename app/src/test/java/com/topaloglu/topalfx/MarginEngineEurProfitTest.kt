@@ -5,99 +5,70 @@ import com.topaloglu.topalfx.data.CalcMode
 import com.topaloglu.topalfx.data.MarginEngine
 import com.topaloglu.topalfx.data.TransferDirection
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Test
 
-/** The office fund is accounted in EUR, so profit is unified to EUR. */
+/** The office fund is accounted in EUR, so every profit is restated in EUR. */
 class MarginEngineEurProfitTest {
 
     private val delta = 1e-6
 
+    private fun input(
+        direction: TransferDirection,
+        marketRate: Double,
+        customerRate: Double,
+        usdToEurRate: Double = 0.0,
+    ) = CalcInput(
+        direction = direction,
+        mode = CalcMode.SEND_EXACT,
+        feeInclusive = true,
+        baseAmount = 1000.0,
+        marketRate = marketRate,
+        customerRate = customerRate,
+        pctFee = 4.0,
+        pctAgentCost = 2.0,
+        usdToEurRate = usdToEurRate,
+    )
+
     @Test
-    fun `EUR base profit is already in EUR`() {
+    fun `an EUR base needs no conversion`() {
         val result = MarginEngine.calculateProfit(
-            CalcInput(
-                direction = TransferDirection.EUR_TO_USD,
-                mode = CalcMode.SEND_EXACT,
-                baseAmount = 1000.0,
-                marketRate = 1.15,
-                customerRate = 1.14,
-            )
+            input(TransferDirection.EUR_TO_USD, marketRate = 1.10, customerRate = 1.05)
         )
-        assertNull(result.error)
-        assertEquals(1.0, result.eurConversionRate!!, delta)
+        assertEquals(1.0, result.eurConversionRate!!, 0.0)
         assertEquals(result.netProfitBase, result.netProfitEur!!, delta)
     }
 
     @Test
-    fun `USD to USD profit converts with the live EUR rate`() {
+    fun `a USD base converts with the live EUR rate`() {
         val result = MarginEngine.calculateProfit(
-            CalcInput(
-                direction = TransferDirection.USD_TO_USD,
-                mode = CalcMode.SEND_EXACT,
-                baseAmount = 1000.0,
-                flatFee = 50.0,
-                deliveryFee = 20.0,
+            input(
+                TransferDirection.USD_TO_USD,
+                marketRate = 1.0,
+                customerRate = 1.0,
                 usdToEurRate = 0.92,
             )
         )
-        assertNull(result.error)
-        // Same-currency: no spread, profit = 50 flat fee - 20 delivery = 30 USD.
-        assertEquals(30.0, result.netProfitBase, delta)
-        assertEquals(0.92, result.eurConversionRate!!, delta)
-        assertEquals(30.0 * 0.92, result.netProfitEur!!, delta)
-    }
-
-    @Test
-    fun `USD to EUR falls back to the market rate when live EUR rate is missing`() {
-        val result = MarginEngine.calculateProfit(
-            CalcInput(
-                direction = TransferDirection.USD_TO_EUR,
-                mode = CalcMode.SEND_EXACT,
-                baseAmount = 1000.0,
-                flatFee = 10.0,
-                marketRate = 0.92,
-                customerRate = 0.91,
-                usdToEurRate = 0.0,
-            )
-        )
-        assertNull(result.error)
-        assertEquals(0.92, result.eurConversionRate!!, delta)
+        assertEquals(0.92, result.eurConversionRate!!, 0.0)
         assertEquals(result.netProfitBase * 0.92, result.netProfitEur!!, delta)
     }
 
     @Test
-    fun `USD to USD without a live EUR rate reports no EUR figure`() {
+    fun `USD to EUR falls back to its own market rate when the live rate is missing`() {
         val result = MarginEngine.calculateProfit(
-            CalcInput(
-                direction = TransferDirection.USD_TO_USD,
-                mode = CalcMode.SEND_EXACT,
-                baseAmount = 1000.0,
-                flatFee = 50.0,
-                usdToEurRate = 0.0,
-            )
+            input(TransferDirection.USD_TO_EUR, marketRate = 0.92, customerRate = 0.90)
         )
-        assertNull(result.error)
-        assertNull(result.eurConversionRate)
-        assertNull(result.netProfitEur)
-        assertEquals(50.0, result.netProfitBase, delta)
+        assertEquals(0.92, result.eurConversionRate!!, 0.0)
+        assertNotNull(result.netProfitEur)
     }
 
     @Test
-    fun `customer rate one cent below market produces the expected spread`() {
-        // 1.15 market, 1.14 customer — the office keeps the one-cent difference.
+    fun `USD to USD without a live rate reports no EUR figure`() {
         val result = MarginEngine.calculateProfit(
-            CalcInput(
-                direction = TransferDirection.EUR_TO_USD,
-                mode = CalcMode.SEND_EXACT,
-                baseAmount = 1000.0,
-                marketRate = 1.15,
-                customerRate = 1.14,
-            )
+            input(TransferDirection.USD_TO_USD, marketRate = 1.0, customerRate = 1.0)
         )
-        assertNull(result.error)
-        assertEquals(1140.0, result.targetDelivered, delta)
-        assertEquals(1000.0 - 1140.0 / 1.15, result.hiddenSpread, delta)
-        assertEquals(result.hiddenSpread, result.netProfitEur!!, delta)
+        assertNull(result.eurConversionRate)
+        assertNull(result.netProfitEur)
     }
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Shield T — monochrome layer for Android 13+ themed icons.
+
+  The system tints this to the user's wallpaper palette, so it must be a single-colour
+  silhouette. Strokes are thicker than the colour foreground because a tinted mark loses
+  the gold-on-navy contrast that carries the fine lines.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <path
+        android:pathData="M54,24 L80,36 L80,56 C80,71 66,82 54,86 C42,82 28,71 28,56 L28,36 Z"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="6"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round" />
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M39,42h30v9h-30z" />
+
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M49,51h10v24h-10z" />
+</vector>

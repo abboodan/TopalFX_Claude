@@ -21,22 +21,22 @@
     <string name="mode_custom_deal">صفقة خاصة</string>
 
     <!-- Inputs -->
-    <string name="input_base_amount">مبلغ المرسل</string>
+    <string name="input_cash_received">المقبوض من الزبون</string>
+    <string name="input_transfer_amount">مبلغ الحوالة</string>
     <string name="input_target_received">المبلغ المستلم للمستفيد</string>
     <string name="input_custom_base_received">المبلغ المستلم (الأساس)</string>
     <string name="input_custom_target_delivered">المبلغ الواصل (الهدف)</string>
     <string name="input_market_rate">سعر السوق</string>
     <string name="input_customer_rate">سعر الزبون</string>
-    <string name="input_flat_fee">عمولة ثابتة</string>
-    <string name="input_pct_fee">عمولة نسبية %</string>
-    <string name="input_delivery_fee">أجرة التسليم</string>
-    <string name="delivery_fee_currency_note">بعملة التحويل (%1$s) وتُوحَّد لليورو في الربح</string>
-    <string name="input_flat_agent_cost">تكلفة المكتب الثابتة</string>
-    <string name="input_pct_agent_cost">تكلفة المكتب %</string>
-    <string name="fee_inclusive">العمولة ضمن المبلغ</string>
+    <string name="input_pct_fee">أتعاب %</string>
+    <string name="input_delivery_fee">أجرة تسليم المكتب</string>
+    <string name="delivery_fee_currency_note">بعملة التسليم (%1$s) — تُخصم من ربحك ولا تنقص مبلغ المستفيد</string>
+    <string name="input_pct_agent_cost">إعادة التنزيل %</string>
+    <string name="fee_inclusive">الأتعاب ضمن المبلغ</string>
+    <string name="fee_inclusive_hint">مفعّل: المبلغ المكتوب هو الكاش الذي سلّمك إياه الزبون</string>
     <string name="deduction_base">أساس التنزيل</string>
-    <string name="deduction_on_received">على المبلغ المستلم</string>
-    <string name="deduction_on_delivered">على المبلغ الواصل</string>
+    <string name="deduction_on_received">على المقبوض</string>
+    <string name="deduction_on_delivered">على المسلّم</string>
     <string name="rates_locked">السعر مثبّت 1.0000 (نفس العملة)</string>
 
     <!-- Live rate binding -->
@@ -47,15 +47,29 @@
     <string name="customer_rate_auto">تلقائي: سعر السوق ناقص %1$s</string>
     <string name="customer_rate_manual">مُدخل يدوياً</string>
     <string name="customer_rate_discount_chip">‎−%1$s</string>
-    <string name="settings_default_customer_discount">الخصم الافتراضي عن سعر السوق</string>
+
+    <!-- Actions -->
+    <string name="action_calculate">أحسب</string>
+    <string name="action_reset">تصفير</string>
+    <string name="action_undo">تراجع</string>
+    <string name="calc_done">تمت إعادة الحساب — النتائج محدَّثة</string>
+    <string name="calc_no_input">أدخل المبلغ أولاً</string>
+    <string name="reset_done">تم التصفير — أُعيدت القيم الافتراضية ويجري تحديث الأسعار</string>
 
     <!-- Settings -->
     <string name="settings_title">الإعدادات</string>
     <string name="settings_defaults_section">القيم الافتراضية للمكتب</string>
     <string name="settings_defaults_hint">تُطبّق تلقائياً على كل حوالة جديدة بدل إعادة كتابتها في كل مرة.</string>
-    <string name="settings_default_pct_agent">نسبة التنزيل الافتراضية %</string>
-    <string name="settings_default_flat_agent">تكلفة المكتب الثابتة الافتراضية</string>
+    <string name="settings_section_transfer">افتراضيات الحوالة</string>
+    <string name="settings_section_fees">أتعاب الزبون</string>
+    <string name="settings_section_costs">تكاليف المكتب</string>
+    <string name="settings_default_direction">اتجاه التحويل الافتراضي</string>
+    <string name="settings_default_mode">طريقة الحساب الافتراضية</string>
+    <string name="settings_default_pct_fee">نسبة الأتعاب الافتراضية %</string>
+    <string name="settings_default_fee_inclusive">الأتعاب ضمن المبلغ افتراضياً</string>
+    <string name="settings_default_pct_agent">نسبة إعادة التنزيل الافتراضية %</string>
     <string name="settings_default_deduction">أساس التنزيل الافتراضي</string>
+    <string name="settings_default_customer_discount">الخصم الافتراضي عن سعر السوق</string>
     <string name="settings_saved">تم حفظ الإعدادات</string>
     <string name="action_settings">الإعدادات</string>
     <string name="action_back">رجوع</string>
@@ -63,25 +77,25 @@
     <!-- Validation -->
     <string name="error_invalid_number">رقم غير صالح</string>
     <string name="error_negative_value">لا يُسمح بالقيم السالبة</string>
-    <string name="error_fee_overflow">العمولات أكبر من المبلغ</string>
+    <string name="error_fee_overflow">نسبة الأتعاب يجب أن تكون أقل من 100٪</string>
     <string name="error_missing_rate">أدخل سعر صرف صحيح</string>
 
     <!-- Results -->
     <string name="results_title">النتائج</string>
-    <string name="result_principal">المبلغ الأساسي</string>
-    <string name="result_target_delivered">المبلغ الواصل</string>
-    <string name="result_total_paid">إجمالي المدفوع من الزبون</string>
-    <string name="result_total_received">صافي المستلم للمستفيد</string>
-    <string name="result_flat_fee">العمولة الثابتة</string>
-    <string name="result_pct_fee">العمولة النسبية</string>
+    <string name="result_cash_received">المقبوض من الزبون</string>
+    <string name="result_transfer_amount">مبلغ الحوالة</string>
+    <string name="result_target_delivered">الواصل للمستفيد</string>
+    <string name="result_pct_fee">الأتعاب</string>
     <string name="result_hidden_spread">ربح فرق السعر</string>
-    <string name="result_agent_flat">تكلفة المكتب الثابتة</string>
-    <string name="result_agent_pct">تكلفة المكتب النسبية</string>
-    <string name="result_delivery_fee_base">أجرة التسليم (بعملة الأساس)</string>
+    <string name="result_agent_pct">إعادة التنزيل</string>
+    <string name="result_delivery_fee_base">أجرة التسليم (تُخصم من الربح)</string>
     <string name="result_net_profit">صافي الربح</string>
     <string name="result_profit_section">تفاصيل الربح (%1$s)</string>
     <string name="result_net_profit_base">يعادل %1$s %2$s بعملة الحوالة</string>
     <string name="result_eur_unavailable">سعر اليورو الحي غير متوفر — الأرقام معروضة بعملة الأساس</string>
+    <string name="result_break_even">الربح سالب — أقل نسبة أتعاب للتعادل: ‎%1$s٪</string>
+    <string name="result_negative_profit">الربح سالب — راجع السعر والتكاليف</string>
+    <string name="result_last_calculated">آخر حساب: ‎%1$s</string>
 
     <!-- Updater -->
     <string name="update_check">التحقق من التحديثات</string>

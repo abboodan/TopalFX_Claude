@@ -16,15 +16,17 @@ import java.util.Locale
 
 enum class InputField {
     BASE_AMOUNT, TARGET_RECEIVED, CUSTOM_BASE_RECEIVED, CUSTOM_TARGET_DELIVERED,
-    MARKET_RATE, CUSTOMER_RATE, FLAT_FEE, PCT_FEE, DELIVERY_FEE,
-    FLAT_AGENT_COST, PCT_AGENT_COST,
+    MARKET_RATE, CUSTOMER_RATE, PCT_FEE, DELIVERY_FEE, PCT_AGENT_COST,
 }
 
+/** What the user last did on purpose, so the UI can confirm it. */
+enum class CalculatorAction { CALCULATED, RESET }
+
 data class CalculatorUiState(
-    val direction: TransferDirection = TransferDirection.EUR_TO_USD,
-    val mode: CalcMode = CalcMode.SEND_EXACT,
-    val deductionBase: DeductionBase = DeductionBase.ON_RECEIVED,
-    val feeInclusive: Boolean = false,
+    val direction: TransferDirection = Prefs.DEFAULT_DIRECTION,
+    val mode: CalcMode = Prefs.DEFAULT_MODE,
+    val deductionBase: DeductionBase = Prefs.DEFAULT_DEDUCTION_BASE,
+    val feeInclusive: Boolean = Prefs.DEFAULT_FEE_INCLUSIVE,
     val fields: Map<InputField, String> = emptyMap(),
     /** While true the market rate keeps tracking the live ticker rate. */
     val marketRateAutoFilled: Boolean = true,
@@ -35,19 +37,44 @@ data class CalculatorUiState(
     /** Live EUR per 1 USD, used to unify the profit to EUR. */
     val usdToEurRate: Double = 0.0,
     val result: CalcResult? = null,
+    /**
+     * Bumped only by deliberate user actions. A StateFlow drops structurally equal
+     * emissions, so without this counter pressing Calculate on unchanged inputs would
+     * produce no emission and therefore no confirmation.
+     */
+    val actionId: Long = 0L,
+    val lastAction: CalculatorAction? = null,
+    /** Wall-clock stamp of the last explicit calculation; 0 until the first one. */
+    val lastCalculatedAt: Long = 0L,
 ) {
     val ratesLocked: Boolean get() = direction.isSameCurrency
+
     fun field(field: InputField): String = fields[field] ?: ""
+
+    /** Whether the mode's primary amount is filled in. */
+    val hasPrimaryAmount: Boolean
+        get() = field(
+            when (mode) {
+                CalcMode.SEND_EXACT -> InputField.BASE_AMOUNT
+                CalcMode.RECEIVE_EXACT -> InputField.TARGET_RECEIVED
+                CalcMode.CUSTOM_DEAL -> InputField.CUSTOM_BASE_RECEIVED
+            }
+        ).isNotBlank()
 }
 
 /**
  * Reactive calculation engine host: every input change immediately re-runs
- * [MarginEngine.calculateProfit] — pure math, no coroutines needed.
+ * [MarginEngine.calculateProfit] — pure math, no coroutines needed. The Calculate
+ * button re-runs it explicitly on top of that, so the owner can confirm the figure
+ * he is about to quote came from the numbers currently on screen.
  */
 class CalculatorViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _uiState = MutableStateFlow(recalculated(stateWithDefaults(CalculatorUiState())))
     val uiState: StateFlow<CalculatorUiState> = _uiState.asStateFlow()
+
+    /** The state captured just before the last reset, for the Undo action. */
+    private var stateBeforeReset: CalculatorUiState? = null
 
     fun onFieldChanged(field: InputField, raw: String) {
         update { state ->
@@ -70,20 +97,9 @@ class CalculatorViewModel(app: Application) : AndroidViewModel(app) {
     fun onDirectionChanged(direction: TransferDirection) {
         update { state ->
             if (state.direction == direction) return@update state
-            var fields = state.fields
-            fields = if (direction.isSameCurrency) {
-                fields + (InputField.MARKET_RATE to LOCKED_RATE) +
-                    (InputField.CUSTOMER_RATE to LOCKED_RATE)
-            } else if (state.direction.isSameCurrency) {
-                // Leaving a locked direction: drop the 1.0000 placeholders so the
-                // live rate can take over.
-                fields - InputField.MARKET_RATE - InputField.CUSTOMER_RATE
-            } else {
-                fields
-            }
             state.copy(
                 direction = direction,
-                fields = fields,
+                fields = directionRateFields(state.fields, state.direction, direction),
                 marketRateAutoFilled = true,
                 customerRateAutoFilled = true,
             )
@@ -124,20 +140,105 @@ class CalculatorViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    /** Re-applies the defaults saved in settings. */
+    /**
+     * Re-runs the engine on the numbers currently on screen and flags the run so the UI
+     * can confirm it. Inputs are untouched and results are never hidden — this sits on
+     * top of the live recalculation, it does not replace it.
+     */
+    fun recalculateNow() = update {
+        it.copy(
+            actionId = it.actionId + 1,
+            lastAction = CalculatorAction.CALCULATED,
+            lastCalculatedAt = System.currentTimeMillis(),
+        )
+    }
+
+    /**
+     * Clears the sheet for the next customer and restores every saved default.
+     *
+     * Starts from a fresh [CalculatorUiState] rather than copying the current one, so no
+     * field can survive a reset — including fields added to the enum later.
+     *
+     * [liveMarketRate] re-seeds the market rate immediately. Leaving it blank would be a
+     * trap: the screen only pushes a live rate when the rate or the direction changes, so
+     * a refresh that returns the same rate would leave the field empty and the results
+     * hidden behind a missing-rate error.
+     */
+    fun reset(liveMarketRate: Double? = null) {
+        val previous = _uiState.value
+        stateBeforeReset = previous
+
+        val direction = Prefs.getDefaultDirection(getApplication())
+        var state = CalculatorUiState(
+            direction = direction,
+            mode = Prefs.getDefaultMode(getApplication()),
+            usdToEurRate = previous.usdToEurRate,
+            actionId = previous.actionId + 1,
+            lastAction = CalculatorAction.RESET,
+        )
+        state = stateWithDefaults(state, includeNavigation = true)
+        state = state.copy(
+            fields = directionRateFields(state.fields, previous.direction, direction)
+        )
+        if (!direction.isSameCurrency && liveMarketRate != null && liveMarketRate > 0.0) {
+            state = state.copy(
+                fields = state.fields + (InputField.MARKET_RATE to formatRate(liveMarketRate))
+            )
+        }
+        _uiState.value = recalculated(withDerivedCustomerRate(state))
+    }
+
+    /** Restores the sheet captured before the last reset. */
+    fun undoReset() {
+        val restored = stateBeforeReset ?: return
+        stateBeforeReset = null
+        _uiState.value = restored.copy(
+            actionId = _uiState.value.actionId + 1,
+            lastAction = null,
+        )
+    }
+
+    /** Re-applies the defaults saved in settings, leaving direction and mode alone. */
     fun applyDefaults() = update { stateWithDefaults(it) }
 
-    private fun stateWithDefaults(state: CalculatorUiState): CalculatorUiState {
+    private fun stateWithDefaults(
+        state: CalculatorUiState,
+        includeNavigation: Boolean = false,
+    ): CalculatorUiState {
         val context = getApplication<Application>()
         val fields = state.fields +
-            (InputField.PCT_AGENT_COST to Prefs.getDefaultPctAgentCost(context)) +
-            (InputField.FLAT_AGENT_COST to Prefs.getDefaultFlatAgentCost(context))
-        return state.copy(
+            (InputField.PCT_FEE to Prefs.getDefaultPctFee(context)) +
+            (InputField.PCT_AGENT_COST to Prefs.getDefaultPctAgentCost(context))
+        var result = state.copy(
             fields = fields,
             deductionBase = Prefs.getDefaultDeductionBase(context),
+            feeInclusive = Prefs.getDefaultFeeInclusive(context),
             customerRateDiscount = Prefs.getDefaultCustomerDiscount(context),
             customerRateAutoFilled = true,
         )
+        if (includeNavigation) {
+            result = result.copy(
+                direction = Prefs.getDefaultDirection(context),
+                mode = Prefs.getDefaultMode(context),
+            )
+        }
+        return result
+    }
+
+    /**
+     * Same-currency directions show a locked 1.0000; leaving one drops the placeholders
+     * so the live rate can take over.
+     */
+    private fun directionRateFields(
+        fields: Map<InputField, String>,
+        from: TransferDirection,
+        to: TransferDirection,
+    ): Map<InputField, String> = when {
+        to.isSameCurrency ->
+            fields + (InputField.MARKET_RATE to LOCKED_RATE) +
+                (InputField.CUSTOMER_RATE to LOCKED_RATE)
+        from.isSameCurrency -> fields - InputField.MARKET_RATE - InputField.CUSTOMER_RATE
+        else -> fields
     }
 
     private fun update(transform: (CalculatorUiState) -> CalculatorUiState) {
@@ -157,12 +258,7 @@ class CalculatorViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     private fun recalculated(state: CalculatorUiState): CalculatorUiState {
-        val primary = when (state.mode) {
-            CalcMode.SEND_EXACT -> state.field(InputField.BASE_AMOUNT)
-            CalcMode.RECEIVE_EXACT -> state.field(InputField.TARGET_RECEIVED)
-            CalcMode.CUSTOM_DEAL -> state.field(InputField.CUSTOM_BASE_RECEIVED)
-        }
-        if (primary.isBlank()) return state.copy(result = null)
+        if (!state.hasPrimaryAmount) return state.copy(result = null)
 
         val input = CalcInput(
             direction = state.direction,
@@ -175,10 +271,8 @@ class CalculatorViewModel(app: Application) : AndroidViewModel(app) {
             customTargetDelivered = parse(state.field(InputField.CUSTOM_TARGET_DELIVERED)),
             marketRate = parse(state.field(InputField.MARKET_RATE)),
             customerRate = parse(state.field(InputField.CUSTOMER_RATE)),
-            flatFee = parse(state.field(InputField.FLAT_FEE)),
             pctFee = parse(state.field(InputField.PCT_FEE)),
             deliveryFee = parse(state.field(InputField.DELIVERY_FEE)),
-            flatAgentCost = parse(state.field(InputField.FLAT_AGENT_COST)),
             pctAgentCost = parse(state.field(InputField.PCT_AGENT_COST)),
             usdToEurRate = state.usdToEurRate,
         )

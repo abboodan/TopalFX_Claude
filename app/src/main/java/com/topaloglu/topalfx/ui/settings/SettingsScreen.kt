@@ -2,8 +2,12 @@ package com.topaloglu.topalfx.ui.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -17,11 +21,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.topaloglu.topalfx.R
+import com.topaloglu.topalfx.data.CalcMode
 import com.topaloglu.topalfx.data.DeductionBase
+import com.topaloglu.topalfx.data.TransferDirection
+import com.topaloglu.topalfx.ui.calculator.LabeledSwitchRow
 import com.topaloglu.topalfx.ui.calculator.ValidatedNumberField
-import com.topaloglu.topalfx.ui.calculator.formatRate
+import com.topaloglu.topalfx.ui.theme.TopalFXTheme
 import com.topaloglu.topalfx.util.Prefs
 import com.topaloglu.topalfx.viewmodel.CalculatorViewModel
 
@@ -31,16 +39,41 @@ fun SettingsScreen(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    var pctAgentCost by remember { mutableStateOf(Prefs.getDefaultPctAgentCost(context)) }
-    var flatAgentCost by remember { mutableStateOf(Prefs.getDefaultFlatAgentCost(context)) }
-    var deductionBase by remember { mutableStateOf(Prefs.getDefaultDeductionBase(context)) }
-    var customerDiscount by remember {
-        mutableStateOf(formatRate(Prefs.getDefaultCustomerDiscount(context)))
-    }
+    var form by remember { mutableStateOf(SettingsFormState.from(context)) }
 
-    val pctError = validationMessage(pctAgentCost)
-    val flatError = validationMessage(flatAgentCost)
-    val discountError = validationMessage(customerDiscount)
+    SettingsScreenContent(
+        form = form,
+        onFormChange = { form = it },
+        onSave = {
+            Prefs.setDefaults(
+                context = context,
+                direction = form.direction,
+                mode = form.mode,
+                pctFee = form.pctFee,
+                feeInclusive = form.feeInclusive,
+                pctAgentCost = form.pctAgentCost,
+                deductionBase = form.deductionBase,
+                customerDiscount = CalculatorViewModel.parse(form.customerDiscount)
+                    .takeIf { it.isFinite() && it >= 0.0 }
+                    ?: Prefs.DEFAULT_CUSTOMER_DISCOUNT,
+            )
+            onSaved()
+        },
+        modifier = modifier,
+    )
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+fun SettingsScreenContent(
+    form: SettingsFormState,
+    onFormChange: (SettingsFormState) -> Unit,
+    onSave: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val pctFeeError = validationMessage(form.pctFee)
+    val pctAgentError = validationMessage(form.pctAgentCost)
+    val discountError = validationMessage(form.customerDiscount)
 
     Column(
         modifier = modifier.fillMaxWidth(),
@@ -56,34 +89,86 @@ fun SettingsScreen(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
+        // ---- Transfer defaults ----
+        SectionHeader(stringResource(R.string.settings_section_transfer))
+
+        Text(
+            text = stringResource(R.string.settings_default_direction),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        // Four labels of the form "€ EUR ➔ $ USD" will not fit a segmented row on a phone.
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            TransferDirection.entries.forEach { direction ->
+                FilterChip(
+                    selected = form.direction == direction,
+                    onClick = { onFormChange(form.copy(direction = direction)) },
+                    label = {
+                        Text(
+                            "${direction.base.symbol} ${direction.base.name} ➔ " +
+                                "${direction.target.symbol} ${direction.target.name}"
+                        )
+                    },
+                )
+            }
+        }
+
+        Text(
+            text = stringResource(R.string.settings_default_mode),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
+            CalcMode.entries.forEachIndexed { index, mode ->
+                SegmentedButton(
+                    selected = form.mode == mode,
+                    onClick = { onFormChange(form.copy(mode = mode)) },
+                    shape = SegmentedButtonDefaults.itemShape(
+                        index = index,
+                        count = CalcMode.entries.size,
+                    ),
+                ) {
+                    Text(text = modeLabel(mode), style = MaterialTheme.typography.labelMedium)
+                }
+            }
+        }
+
+        // ---- Customer fees ----
+        SectionHeader(stringResource(R.string.settings_section_fees))
+
         ValidatedNumberField(
-            value = pctAgentCost,
-            onValueChange = { pctAgentCost = it },
+            value = form.pctFee,
+            onValueChange = { onFormChange(form.copy(pctFee = it)) },
+            label = stringResource(R.string.settings_default_pct_fee),
+            errorText = pctFeeError,
+        )
+        LabeledSwitchRow(
+            label = stringResource(R.string.settings_default_fee_inclusive),
+            checked = form.feeInclusive,
+            onCheckedChange = { onFormChange(form.copy(feeInclusive = it)) },
+            supportingText = stringResource(R.string.fee_inclusive_hint),
+        )
+
+        // ---- Office costs ----
+        SectionHeader(stringResource(R.string.settings_section_costs))
+
+        ValidatedNumberField(
+            value = form.pctAgentCost,
+            onValueChange = { onFormChange(form.copy(pctAgentCost = it)) },
             label = stringResource(R.string.settings_default_pct_agent),
-            errorText = pctError,
-        )
-        ValidatedNumberField(
-            value = flatAgentCost,
-            onValueChange = { flatAgentCost = it },
-            label = stringResource(R.string.settings_default_flat_agent),
-            errorText = flatError,
-        )
-        ValidatedNumberField(
-            value = customerDiscount,
-            onValueChange = { customerDiscount = it },
-            label = stringResource(R.string.settings_default_customer_discount),
-            errorText = discountError,
+            errorText = pctAgentError,
         )
 
         Text(
             text = stringResource(R.string.settings_default_deduction),
-            style = MaterialTheme.typography.titleSmall,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
             DeductionBase.entries.forEachIndexed { index, base ->
                 SegmentedButton(
-                    selected = deductionBase == base,
-                    onClick = { deductionBase = base },
+                    selected = form.deductionBase == base,
+                    onClick = { onFormChange(form.copy(deductionBase = base)) },
                     shape = SegmentedButtonDefaults.itemShape(
                         index = index,
                         count = DeductionBase.entries.size,
@@ -100,24 +185,47 @@ fun SettingsScreen(
             }
         }
 
+        ValidatedNumberField(
+            value = form.customerDiscount,
+            onValueChange = { onFormChange(form.copy(customerDiscount = it)) },
+            label = stringResource(R.string.settings_default_customer_discount),
+            errorText = discountError,
+        )
+
         Button(
-            onClick = {
-                Prefs.setDefaults(
-                    context = context,
-                    pctAgentCost = pctAgentCost,
-                    flatAgentCost = flatAgentCost,
-                    deductionBase = deductionBase,
-                    customerDiscount = CalculatorViewModel.parse(customerDiscount)
-                        .takeIf { it.isFinite() && it >= 0.0 }
-                        ?: Prefs.DEFAULT_CUSTOMER_DISCOUNT,
-                )
-                onSaved()
-            },
-            enabled = pctError == null && flatError == null && discountError == null,
+            onClick = onSave,
+            enabled = pctFeeError == null && pctAgentError == null && discountError == null,
             modifier = Modifier.fillMaxWidth(),
         ) {
             Text(stringResource(R.string.action_save))
         }
+    }
+}
+
+@Composable
+private fun SectionHeader(title: String) {
+    HorizontalDivider()
+    Text(text = title, style = MaterialTheme.typography.titleSmall)
+}
+
+@Composable
+private fun modeLabel(mode: CalcMode): String = stringResource(
+    when (mode) {
+        CalcMode.SEND_EXACT -> R.string.mode_send_exact
+        CalcMode.RECEIVE_EXACT -> R.string.mode_receive_exact
+        CalcMode.CUSTOM_DEAL -> R.string.mode_custom_deal
+    }
+)
+
+@Preview(showBackground = true, locale = "ar")
+@Composable
+private fun SettingsScreenPreview() {
+    TopalFXTheme {
+        SettingsScreenContent(
+            form = SettingsFormState(pctFee = "5", pctAgentCost = "2.5"),
+            onFormChange = {},
+            onSave = {},
+        )
     }
 }
 

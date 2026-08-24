@@ -15,8 +15,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -27,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -34,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.topaloglu.topalfx.R
 import com.topaloglu.topalfx.data.TransferDirection
+import com.topaloglu.topalfx.ui.calculator.CalculatorActionBar
 import com.topaloglu.topalfx.ui.calculator.CalculatorScreen
 import com.topaloglu.topalfx.ui.settings.SettingsScreen
 import com.topaloglu.topalfx.ui.ticker.TickerBoard
@@ -57,14 +61,26 @@ fun AppScaffold(
     val isRefreshing by tickerViewModel.isRefreshing.collectAsState()
     val hasError by tickerViewModel.hasError.collectAsState()
 
-    var showSettings by remember { mutableStateOf(false) }
+    // rememberSaveable, or a rotation silently kicks the user out of Settings.
+    var showSettings by rememberSaveable { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val settingsSavedMessage = stringResource(R.string.settings_saved)
+    val calcDoneMessage = stringResource(R.string.calc_done)
+    val calcNoInputMessage = stringResource(R.string.calc_no_input)
+    val resetDoneMessage = stringResource(R.string.reset_done)
+    val undoLabel = stringResource(R.string.action_undo)
 
-    // Market rate follows the live ticker for the selected direction.
+    // Repeated taps must not queue up a backlog of toasts.
+    fun announce(message: String) = scope.launch {
+        snackbarHostState.currentSnackbarData?.dismiss()
+        snackbarHostState.showSnackbar(message, duration = SnackbarDuration.Short)
+    }
+
+    // Market rate follows the live ticker for the selected direction. actionId is a key
+    // so a reset re-pushes the rate even when the ticker value has not moved.
     val liveMarketRate = tickerViewModel.liveRate(calculatorState.direction)
-    LaunchedEffect(liveMarketRate, calculatorState.direction) {
+    LaunchedEffect(liveMarketRate, calculatorState.direction, calculatorState.actionId) {
         calculatorViewModel.onLiveMarketRate(liveMarketRate)
     }
     // EUR conversion for the profit line, needed when the base currency is USD.
@@ -120,6 +136,44 @@ fun AppScaffold(
                 },
             )
         },
+        bottomBar = {
+            // Settings has its own full-width Save button; two action bars would confuse.
+            if (!showSettings) {
+                CalculatorActionBar(
+                    calculateEnabled = calculatorState.hasPrimaryAmount,
+                    onCalculate = {
+                        calculatorViewModel.recalculateNow()
+                        announce(
+                            if (calculatorState.hasPrimaryAmount) calcDoneMessage
+                            else calcNoInputMessage
+                        )
+                    },
+                    onReset = {
+                        calculatorViewModel.reset(liveMarketRate)
+                        scope.launch {
+                            // Confirm straight away — the ticker shows its own spinner,
+                            // so making the owner wait on the network would be friction
+                            // for no information.
+                            snackbarHostState.currentSnackbarData?.dismiss()
+                            val outcome = snackbarHostState.showSnackbar(
+                                message = resetDoneMessage,
+                                actionLabel = undoLabel,
+                                duration = SnackbarDuration.Short,
+                            )
+                            if (outcome == SnackbarResult.ActionPerformed) {
+                                calculatorViewModel.undoReset()
+                            }
+                        }
+                        scope.launch {
+                            tickerViewModel.manualRefresh().join()
+                            calculatorViewModel.onLiveMarketRate(
+                                tickerViewModel.liveRate(calculatorViewModel.uiState.value.direction)
+                            )
+                        }
+                    },
+                )
+            }
+        },
         snackbarHost = { SnackbarHost(snackbarHostState) },
     ) { innerPadding ->
         Column(
@@ -144,7 +198,7 @@ fun AppScaffold(
                     rates = rates,
                     isRefreshing = isRefreshing,
                     hasError = hasError,
-                    onRefresh = tickerViewModel::manualRefresh,
+                    onRefresh = { tickerViewModel.manualRefresh() },
                     onUpdatePairs = tickerViewModel::updatePairs,
                 )
                 CalculatorScreen(

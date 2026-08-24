@@ -1,6 +1,9 @@
 package com.topaloglu.topalfx.ui.calculator
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,6 +16,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -83,6 +87,41 @@ fun CurrencyBadge(currency: Currency, modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * Label-and-switch row shared by the calculator and the settings screen.
+ *
+ * The text column is weighted so a long Arabic label wraps instead of pushing the
+ * switch off the edge of the screen.
+ */
+@Composable
+fun LabeledSwitchRow(
+    label: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    supportingText: String? = null,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(text = label, style = MaterialTheme.typography.bodyLarge)
+            if (supportingText != null) {
+                Text(
+                    text = supportingText,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        Switch(checked = checked, onCheckedChange = onCheckedChange)
+    }
+}
+
 fun formatAmount(value: Double): String = String.format(Locale.US, "%,.2f", value)
 
 fun formatRate(value: Double): String = String.format(Locale.US, "%.4f", value)
+
+fun formatPercent(value: Double): String = String.format(Locale.US, "%.2f", value)

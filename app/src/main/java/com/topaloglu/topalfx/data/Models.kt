@@ -13,7 +13,13 @@ enum class TransferDirection(val base: Currency, val target: Currency) {
 
 enum class CalcMode { SEND_EXACT, RECEIVE_EXACT, CUSTOM_DEAL }
 
-/** أساس التنزيل — which amount the percentage agent cost is charged on. */
+/**
+ * أساس التنزيل — which amount إعادة التنزيل is charged on.
+ *
+ * ON_RECEIVED charges it on the cash taken in from the customer, which is what
+ * physically needs converting to digital balance. ON_DELIVERED charges it on the
+ * transfer amount instead. Neither ever reduces what the beneficiary receives.
+ */
 enum class DeductionBase { ON_RECEIVED, ON_DELIVERED }
 
 enum class CalcError { INVALID_NUMBER, NEGATIVE_VALUE, FEE_OVERFLOW, MISSING_RATE }
@@ -22,21 +28,21 @@ data class CalcInput(
     val direction: TransferDirection,
     val mode: CalcMode,
     val deductionBase: DeductionBase = DeductionBase.ON_RECEIVED,
-    val feeInclusive: Boolean = false,
-    // Mode A
+    /** true → the typed amount is the cash R; false → it is the transfer amount F. */
+    val feeInclusive: Boolean = true,
+    /** SEND_EXACT: R when [feeInclusive], otherwise F. */
     val baseAmount: Double = 0.0,
-    // Mode B
+    /** RECEIVE_EXACT: the exact amount the beneficiary must receive, in target currency. */
     val targetReceived: Double = 0.0,
-    // Mode C
     val customBaseReceived: Double = 0.0,
     val customTargetDelivered: Double = 0.0,
-    // shared
     val marketRate: Double = 0.0,
     val customerRate: Double = 0.0,
-    val flatFee: Double = 0.0,
+    /** الأتعاب — the office's fee, as a percentage. */
     val pctFee: Double = 0.0,
+    /** أجرة تسليم المكتب — a flat amount in the TARGET currency, set by the paying office. */
     val deliveryFee: Double = 0.0,
-    val flatAgentCost: Double = 0.0,
+    /** إعادة التنزيل — cash-to-digital conversion cost, as a percentage. */
     val pctAgentCost: Double = 0.0,
     /**
      * Live EUR per 1 USD, used to express the office profit in EUR — the fund's
@@ -46,17 +52,19 @@ data class CalcInput(
 )
 
 data class CalcResult(
-    val principal: Double = 0.0,
+    /** R — cash physically received from the customer, in base currency. */
+    val cashReceived: Double = 0.0,
+    /** F — the transferable amount after الأتعاب, in base currency. */
+    val transferAmount: Double = 0.0,
+    /** F × customerRate. Never reduced by any cost. */
     val targetDelivered: Double = 0.0,
-    val totalReceivedByCustomer: Double = 0.0,
-    val totalPaidByCustomer: Double = 0.0,
-    val flatFee: Double = 0.0,
-    val pctFeeBase: Double = 0.0,
+    val customerFeeBase: Double = 0.0,
     val hiddenSpread: Double = 0.0,
-    val agentCostFlat: Double = 0.0,
-    val agentCostPctBase: Long = 0L,
+    val agentCostBase: Double = 0.0,
     val deliveryFeeBase: Double = 0.0,
     val netProfitBase: Double = 0.0,
+    /** Lowest الأتعاب % that keeps the profit at or above zero; null when undefined. */
+    val breakEvenPctFee: Double? = null,
     /** EUR per 1 unit of the direction's base currency; null when unavailable. */
     val eurConversionRate: Double? = null,
     /** Office profit unified to EUR; null when the live EUR rate is unavailable. */
