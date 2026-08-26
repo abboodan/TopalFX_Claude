@@ -10,6 +10,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -57,6 +59,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun AppScaffold(
     onToggleLanguage: () -> Unit,
+    isDarkTheme: Boolean = false,
+    onToggleTheme: () -> Unit = {},
     calculatorViewModel: CalculatorViewModel = viewModel(),
     tickerViewModel: TickerViewModel = viewModel(),
     updateViewModel: UpdateViewModel = viewModel(),
@@ -120,6 +124,16 @@ fun AppScaffold(
                     if (!showSettings) {
                         TextButton(onClick = onToggleLanguage) {
                             Text(stringResource(R.string.action_language))
+                        }
+                        IconButton(onClick = onToggleTheme) {
+                            Icon(
+                                if (isDarkTheme) Icons.Filled.LightMode
+                                else Icons.Filled.DarkMode,
+                                contentDescription = stringResource(
+                                    if (isDarkTheme) R.string.action_theme_light
+                                    else R.string.action_theme_dark
+                                ),
+                            )
                         }
                         IconButton(onClick = { showSettings = true }) {
                             Icon(

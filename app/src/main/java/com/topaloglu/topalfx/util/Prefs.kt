@@ -18,6 +18,7 @@ object Prefs {
     private const val KEY_DEFAULT_FEE_INCLUSIVE = "default_fee_inclusive"
     private const val KEY_DEFAULT_DIRECTION = "default_direction"
     private const val KEY_DEFAULT_MODE = "default_mode"
+    private const val KEY_THEME_MODE = "theme_mode"
 
     /** Retired in 1.2.0 — purged on the next settings save. */
     private const val KEY_RETIRED_FLAT_AGENT_COST = "default_flat_agent_cost"
@@ -31,6 +32,9 @@ object Prefs {
     val DEFAULT_DIRECTION = TransferDirection.EUR_TO_USD
     val DEFAULT_MODE = CalcMode.SEND_EXACT
     val DEFAULT_DEDUCTION_BASE = DeductionBase.ON_RECEIVED
+
+    /** Which theme the office picked. SYSTEM until they choose for themselves. */
+    val DEFAULT_THEME_MODE = ThemeMode.SYSTEM
 
     const val LANG_ARABIC = "ar"
     const val LANG_ENGLISH = "en"
@@ -49,6 +53,13 @@ object Prefs {
 
     fun setLanguage(context: Context, lang: String) {
         prefs(context).edit().putString(KEY_LANGUAGE, lang).apply()
+    }
+
+    fun getThemeMode(context: Context): ThemeMode =
+        readEnum(context, KEY_THEME_MODE, ThemeMode.entries, DEFAULT_THEME_MODE)
+
+    fun setThemeMode(context: Context, mode: ThemeMode) {
+        prefs(context).edit().putString(KEY_THEME_MODE, mode.name).apply()
     }
 
     fun getTickerPairs(context: Context): List<RatePair> {
@@ -120,3 +131,6 @@ object Prefs {
         return entries.firstOrNull { it.name == stored } ?: fallback
     }
 }
+
+/** How the app decides between the light and dark palettes. */
+enum class ThemeMode { SYSTEM, LIGHT, DARK }

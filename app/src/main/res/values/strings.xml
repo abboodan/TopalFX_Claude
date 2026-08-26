@@ -69,6 +69,8 @@
     <string name="settings_default_deduction">أساس التنزيل الافتراضي</string>
     <string name="settings_default_customer_discount">الخصم الافتراضي عن سعر السوق</string>
     <string name="settings_saved">تم حفظ الإعدادات</string>
+    <string name="action_theme_light">التبديل للوضع الفاتح</string>
+    <string name="action_theme_dark">التبديل للوضع الداكن</string>
     <string name="action_settings">الإعدادات</string>
     <string name="action_back">رجوع</string>
 
@@ -120,12 +122,15 @@
     <string name="section_transfer">حوالة</string>
     <string name="section_download">إعادة تنزيل</string>
     <string name="download_title">إعادة تنزيل مبلغ</string>
-    <string name="download_hint">كم كاش لازم تسلّم حتى يوصل للمحفظة المبلغ اللي بدك إياه.</string>
-    <string name="download_desired_digital">المبلغ المطلوب وصوله للمحفظة</string>
+    <string name="download_hint">تحويل الكاش إلى رصيد رقمي في محفظة الصندوق.</string>
+    <string name="download_amount_cash">المبلغ اللي معك (كاش)</string>
+    <string name="download_amount_target">المبلغ المطلوب وصوله للمحفظة</string>
+    <string name="download_fee_from_amount">أجرة التنزيل من نفس المبلغ</string>
+    <string name="download_fee_from_amount_hint">مفعّل: المبلغ المكتوب هو الكاش اللي معك وتُخصم منه الأجرة</string>
     <string name="download_pct_rate">نسبة إعادة التنزيل %</string>
     <string name="download_result_digital">الواصل للمحفظة</string>
     <string name="download_result_cost">تكلفة العملية</string>
-    <string name="download_result_cash">الكاش المطلوب تسليمه</string>
+    <string name="download_result_cash">الكاش المسلَّم</string>
     <string name="download_rate_overflow">نسبة التنزيل يجب أن تكون أقل من 100٪</string>
     <string name="action_done">تم</string>
     <string name="action_failed">فشل</string>

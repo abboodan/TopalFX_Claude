@@ -26,6 +26,7 @@ import com.topaloglu.topalfx.data.CalcError
 import com.topaloglu.topalfx.data.CashDownloadResult
 import com.topaloglu.topalfx.data.Currency
 import com.topaloglu.topalfx.ui.calculator.CurrencyBadge
+import com.topaloglu.topalfx.ui.calculator.LabeledSwitchRow
 import com.topaloglu.topalfx.ui.calculator.ValidatedNumberField
 import com.topaloglu.topalfx.ui.calculator.formatAmount
 import com.topaloglu.topalfx.viewmodel.CalculatorViewModel
@@ -37,7 +38,11 @@ import java.util.Date
 import java.util.Locale
 
 /**
- * إعادة تنزيل مبلغ — how much cash to hand over so a wanted balance reaches the wallet.
+ * إعادة تنزيل مبلغ — cash into wallet balance.
+ *
+ * The switch decides which end of the operation the office knows first, so the amount
+ * field and the headline figure both follow it. Getting that wrong is what once made a
+ * 100 EUR download read 102.04 instead of 98.
  */
 @Composable
 fun CashDownloadScreen(
@@ -74,10 +79,19 @@ fun CashDownloadScreen(
             }
         }
 
+        // The label has to follow the switch, because the switch changes what the number
+        // means — not just how it is used.
         DownloadNumberField(
-            state, viewModel, DownloadField.DESIRED_DIGITAL,
-            R.string.download_desired_digital,
+            state, viewModel, DownloadField.AMOUNT,
+            if (state.feeFromAmount) R.string.download_amount_cash
+            else R.string.download_amount_target,
             currency = state.currency,
+        )
+        LabeledSwitchRow(
+            label = stringResource(R.string.download_fee_from_amount),
+            checked = state.feeFromAmount,
+            onCheckedChange = viewModel::onFeeFromAmountChanged,
+            supportingText = stringResource(R.string.download_fee_from_amount_hint),
         )
         DownloadNumberField(
             state, viewModel, DownloadField.PCT_RATE,
@@ -103,6 +117,7 @@ fun CashDownloadScreen(
             DownloadResultsCard(
                 result = result,
                 currency = state.currency,
+                feeFromAmount = state.feeFromAmount,
                 lastCalculatedAt = state.lastCalculatedAt,
             )
         }
@@ -113,6 +128,7 @@ fun CashDownloadScreen(
 private fun DownloadResultsCard(
     result: CashDownloadResult,
     currency: Currency,
+    feeFromAmount: Boolean,
     lastCalculatedAt: Long,
     modifier: Modifier = Modifier,
 ) {
@@ -130,26 +146,39 @@ private fun DownloadResultsCard(
                 style = MaterialTheme.typography.titleMedium,
             )
 
-            DownloadRow(
-                stringResource(R.string.download_result_digital),
-                result.desiredDigital,
-                code,
-            )
+            // The known side goes in the detail rows; the answer is the headline below.
+            if (feeFromAmount) {
+                DownloadRow(
+                    stringResource(R.string.download_result_cash),
+                    result.cashRequired,
+                    code,
+                )
+            } else {
+                DownloadRow(
+                    stringResource(R.string.download_result_digital),
+                    result.digitalArrived,
+                    code,
+                )
+            }
             DownloadRow(stringResource(R.string.download_result_cost), result.cost, code)
 
             HorizontalDivider()
-            // The headline figure: this is the number counted out at the counter.
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
             ) {
                 Text(
-                    text = stringResource(R.string.download_result_cash),
+                    text = stringResource(
+                        if (feeFromAmount) R.string.download_result_digital
+                        else R.string.download_result_cash
+                    ),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
-                    text = "${formatAmount(result.cashRequired)} $code",
+                    text = "${formatAmount(
+                        if (feeFromAmount) result.digitalArrived else result.cashRequired
+                    )} $code",
                     style = MaterialTheme.typography.titleMedium
                         .copy(textDirection = TextDirection.Ltr),
                     fontWeight = FontWeight.Bold,

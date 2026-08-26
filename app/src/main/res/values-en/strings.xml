@@ -69,6 +69,8 @@
     <string name="settings_default_deduction">Default deduction base</string>
     <string name="settings_default_customer_discount">Default discount off market rate</string>
     <string name="settings_saved">Settings saved</string>
+    <string name="action_theme_light">Switch to light theme</string>
+    <string name="action_theme_dark">Switch to dark theme</string>
     <string name="action_settings">Settings</string>
     <string name="action_back">Back</string>
 
@@ -120,12 +122,15 @@
     <string name="section_transfer">Transfer</string>
     <string name="section_download">Cash download</string>
     <string name="download_title">Download an amount</string>
-    <string name="download_hint">How much cash to hand over so the balance you want reaches the wallet.</string>
-    <string name="download_desired_digital">Balance that must reach the wallet</string>
+    <string name="download_hint">Turning cash into digital balance in the fund wallet.</string>
+    <string name="download_amount_cash">Cash you have</string>
+    <string name="download_amount_target">Balance that must reach the wallet</string>
+    <string name="download_fee_from_amount">Fee comes out of this amount</string>
+    <string name="download_fee_from_amount_hint">On: the amount you type is the cash in hand and the fee is taken from it</string>
     <string name="download_pct_rate">Cash-to-digital rate %</string>
     <string name="download_result_digital">Arrives in the wallet</string>
     <string name="download_result_cost">Cost of the operation</string>
-    <string name="download_result_cash">Cash to hand over</string>
+    <string name="download_result_cash">Cash handed over</string>
     <string name="download_rate_overflow">The rate must be under 100%</string>
     <string name="action_done">Done</string>
     <string name="action_failed">Failed</string>

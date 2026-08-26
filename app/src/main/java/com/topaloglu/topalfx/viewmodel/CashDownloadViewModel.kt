@@ -11,10 +11,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-enum class DownloadField { DESIRED_DIGITAL, PCT_RATE }
+enum class DownloadField { AMOUNT, PCT_RATE }
 
 data class CashDownloadUiState(
     val currency: Currency = Currency.EUR,
+    /** true → the typed amount is the cash in hand and the cut comes out of it. */
+    val feeFromAmount: Boolean = true,
     val fields: Map<DownloadField, String> = emptyMap(),
     val result: CashDownloadResult? = null,
     /** Bumped by explicit actions so the UI can confirm them; see CalculatorUiState. */
@@ -23,7 +25,7 @@ data class CashDownloadUiState(
 ) {
     fun field(field: DownloadField): String = fields[field] ?: ""
 
-    val hasAmount: Boolean get() = field(DownloadField.DESIRED_DIGITAL).isNotBlank()
+    val hasAmount: Boolean get() = field(DownloadField.AMOUNT).isNotBlank()
 }
 
 /**
@@ -41,6 +43,8 @@ class CashDownloadViewModel(app: Application) : AndroidViewModel(app) {
 
     fun onCurrencyChanged(currency: Currency) = update { it.copy(currency = currency) }
 
+    fun onFeeFromAmountChanged(enabled: Boolean) = update { it.copy(feeFromAmount = enabled) }
+
     fun recalculateNow() = update {
         it.copy(
             actionId = it.actionId + 1,
@@ -49,11 +53,13 @@ class CashDownloadViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun reset() {
+        val previous = _uiState.value
         _uiState.value = recalculated(
             withDefaults(
                 CashDownloadUiState(
-                    currency = _uiState.value.currency,
-                    actionId = _uiState.value.actionId + 1,
+                    currency = previous.currency,
+                    feeFromAmount = previous.feeFromAmount,
+                    actionId = previous.actionId + 1,
                 )
             )
         )
@@ -77,10 +83,9 @@ class CashDownloadViewModel(app: Application) : AndroidViewModel(app) {
             result = CashDownloadEngine.calculate(
                 CashDownloadInput(
                     currency = state.currency,
-                    desiredDigital = CalculatorViewModel.parse(
-                        state.field(DownloadField.DESIRED_DIGITAL)
-                    ),
+                    amount = CalculatorViewModel.parse(state.field(DownloadField.AMOUNT)),
                     pctRate = CalculatorViewModel.parse(state.field(DownloadField.PCT_RATE)),
+                    feeFromAmount = state.feeFromAmount,
                 )
             )
         )
