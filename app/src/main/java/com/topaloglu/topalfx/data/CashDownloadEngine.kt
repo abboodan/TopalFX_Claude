@@ -1,23 +1,24 @@
 package com.topaloglu.topalfx.data
 
 /**
- * إعادة تنزيل مبلغ — turning cash into digital balance in the fund wallet.
+ * إعادة تنزيل مبلغ — a standalone quick calculator for cash-to-wallet conversions.
  *
- * The operator always takes its cut out of the CASH, matching how [MarginEngine] charges
- * إعادة التنزيل on the cash taken in from a customer:
+ * **This is deliberately independent of [MarginEngine].** It exists to price a download
+ * on its own, not as part of a transfer, and it must not be tied to how the transfer
+ * engine charges its own إعادة التنزيل line.
+ *
+ * The office quotes the percentage against the amount being downloaded — the number typed
+ * in — and never against the grossed-up cash. So the fee is the same in both directions:
  *
  * ```
- * التكلفة = الكاش × النسبة
- * الرصيد  = الكاش − التكلفة
+ * الأجرة = المبلغ المكتوب × النسبة
+ *
+ * داخلي (من نفس المبلغ): الكاش = المبلغ        ، الواصل = المبلغ − الأجرة
+ * خارجي:                  الواصل = المبلغ       ، الكاش  = المبلغ + الأجرة
  * ```
  *
- * What changes is which end of that the office knows first, which is what
- * [CashDownloadInput.feeFromAmount] selects:
- *
- * - **من نفس المبلغ** — the typed amount is the cash in hand, and the cut comes out of
- *   it. 100 at 2% leaves 98 in the wallet.
- * - **خارجي** — the typed amount is what has to land in the wallet, and the cut is paid
- *   on top. 100 at 2% needs 102.04 in cash.
+ * At 2.5% on 100 the fee is 2.50 either way: 97.50 arrives when it comes out of the
+ * amount, 102.50 is handed over when it does not.
  *
  * Single currency by design: no rate is involved, only the percentage.
  */
@@ -26,28 +27,27 @@ object CashDownloadEngine {
     fun calculate(input: CashDownloadInput): CashDownloadResult {
         validate(input)?.let { return CashDownloadResult(error = it) }
 
-        val rate = input.pctRate / 100.0
-        val cash: Double
-        val digital: Double
-        if (input.feeFromAmount) {
-            cash = input.amount
-            digital = cash * (1.0 - rate)
+        val fee = input.amount * input.pctRate / 100.0
+        return if (input.feeFromAmount) {
+            CashDownloadResult(
+                cashRequired = input.amount,
+                digitalArrived = input.amount - fee,
+                cost = fee,
+            )
         } else {
-            digital = input.amount
-            cash = digital / (1.0 - rate)
+            CashDownloadResult(
+                cashRequired = input.amount + fee,
+                digitalArrived = input.amount,
+                cost = fee,
+            )
         }
-        return CashDownloadResult(
-            cashRequired = cash,
-            digitalArrived = digital,
-            cost = cash - digital,
-        )
     }
 
     private fun validate(input: CashDownloadInput): CalcError? {
         val relevant = listOf(input.amount, input.pctRate)
         if (relevant.any { !it.isFinite() }) return CalcError.INVALID_NUMBER
         if (relevant.any { it < 0.0 }) return CalcError.NEGATIVE_VALUE
-        // At 100% the whole float is eaten and nothing ever arrives.
+        // At 100% the fee swallows the whole amount and nothing arrives.
         if (input.pctRate >= 100.0) return CalcError.FEE_OVERFLOW
         return null
     }
@@ -57,9 +57,9 @@ data class CashDownloadInput(
     val currency: Currency = Currency.EUR,
     /** The cash in hand when [feeFromAmount], otherwise the balance that must arrive. */
     val amount: Double = 0.0,
-    /** إعادة التنزيل percentage, always charged on the cash. */
+    /** إعادة التنزيل percentage, always charged on [amount]. */
     val pctRate: Double = 0.0,
-    /** true → the cut comes out of the typed amount; false → it is paid on top. */
+    /** true → the fee comes out of the typed amount; false → it is added on top. */
     val feeFromAmount: Boolean = true,
 )
 
@@ -68,7 +68,7 @@ data class CashDownloadResult(
     val cashRequired: Double = 0.0,
     /** What lands in the wallet. */
     val digitalArrived: Double = 0.0,
-    /** What the operation costs — the gap between the two. */
+    /** The office's fee for the operation. */
     val cost: Double = 0.0,
     val error: CalcError? = null,
 )
