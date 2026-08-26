@@ -1,0 +1,139 @@
+<title>TopalFX Button Feedback — Demo</title>
+<style>
+  body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;background:#8a8a8a;padding:20px;
+       display:flex;gap:20px;flex-wrap:wrap;justify-content:center;direction:rtl}
+  .pane{flex:1;min-width:330px;max-width:400px}
+  .pane h2{font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 8px;color:#fff}
+
+  .light{--bg:#F6F8FC;--bar:#F1F4F9;--ink:#11151B;--muted:#4A5462;--outline:#7B8697;
+         --primary:#0B2545;--onPrimary:#FFFFFF;--ok:#1B6B3A;--err:#B3261E;--onErr:#FFFFFF}
+  .dark{--bg:#0C1117;--bar:#1A222C;--ink:#E7ECF3;--muted:#A5B0BF;--outline:#6C7787;
+        --primary:#A9C7F0;--onPrimary:#0B2545;--ok:#6FD394;--err:#FFB4AB;--onErr:#0B2545}
+
+  .screen{background:var(--bg);border-radius:14px;padding:0;overflow:hidden}
+  .body{padding:16px;color:var(--muted);font-size:13px;min-height:110px}
+  .body b{color:var(--ink)}
+  .bar{background:var(--bar);padding:12px 16px;display:flex;gap:12px;align-items:center;
+       box-shadow:0 -2px 8px rgb(0 0 0 /.18)}
+
+  button{font:inherit;font-size:14px;font-weight:600;border-radius:22px;height:44px;
+         cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+         transition:background-color .22s ease,color .22s ease,border-color .22s ease}
+  .calc{flex:1.6;border:0;background:var(--primary);color:var(--onPrimary)}
+  .reset{flex:1;border:1px solid var(--outline);background:transparent;color:var(--primary)}
+  .calc.ok{background:var(--ok);color:var(--onErr)}
+  .calc.bad{background:var(--err);color:var(--onErr)}
+  .reset.ok{color:var(--ok);border-color:var(--ok)}
+  .reset.bad{color:var(--err);border-color:var(--err)}
+
+  .spin{width:18px;height:18px;border-radius:50%;border:2px solid currentColor;
+        border-top-color:transparent;animation:sp .7s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .mark{font-size:19px;line-height:1}
+
+  .ctl{margin:14px 0 0;color:#fff;font-size:12px;display:flex;gap:14px;align-items:center;
+       justify-content:center;flex-wrap:wrap}
+  .ctl label{display:flex;gap:5px;align-items:center;cursor:pointer}
+  .note{max-width:840px;margin:22px auto 0;background:#fff;border-radius:12px;padding:16px 18px;
+        font-size:13px;line-height:1.75;color:#11151B}
+  .note h3{margin:0 0 8px;font-size:14px}
+  .note code{background:#EEF1F6;padding:1px 5px;border-radius:4px;font-family:ui-monospace,Consolas,monospace}
+</style>
+
+<div class="pane">
+  <h2>Light</h2>
+  <div class="screen light" id="s-light">
+    <div class="body">اضغط الأزرار تحت وشوف السلوك.<br><b>أحسب</b>: دائرة قصيرة ثم ✓ أو ✗.<br><b>تصفير</b>: دائرة بطول تحديث الأسعار الحقيقي.</div>
+    <div class="bar">
+      <button class="reset" data-act="reset">↺ تصفير</button>
+      <button class="calc" data-act="calc">▦ أحسب</button>
+    </div>
+  </div>
+</div>
+
+<div class="pane">
+  <h2>Dark</h2>
+  <div class="screen dark" id="s-dark">
+    <div class="body">اضغط الأزرار تحت وشوف السلوك.<br><b>أحسب</b>: دائرة قصيرة ثم ✓ أو ✗.<br><b>تصفير</b>: دائرة بطول تحديث الأسعار الحقيقي.</div>
+    <div class="bar">
+      <button class="reset" data-act="reset">↺ تصفير</button>
+      <button class="calc" data-act="calc">▦ أحسب</button>
+    </div>
+  </div>
+</div>
+
+<div class="pane" style="max-width:840px;flex-basis:100%">
+  <h2>كل الحالات مع بعض — يسار: فاتح · يمين: داكن</h2>
+  <div style="display:flex;gap:16px;flex-wrap:wrap">
+    <div class="screen light" style="flex:1;min-width:330px"><div class="bar" style="flex-wrap:wrap">
+      <button class="calc" style="flex:none;width:120px">▦ أحسب</button>
+      <button class="calc" style="flex:none;width:70px"><span class="spin"></span></button>
+      <button class="calc ok" style="flex:none;width:70px"><span class="mark">✓</span></button>
+      <button class="calc bad" style="flex:none;width:70px"><span class="mark">✕</span></button>
+      <button class="reset" style="flex:none;width:100px">↺ تصفير</button>
+      <button class="reset" style="flex:none;width:64px"><span class="spin"></span></button>
+      <button class="reset ok" style="flex:none;width:64px"><span class="mark">✓</span></button>
+      <button class="reset bad" style="flex:none;width:64px"><span class="mark">✕</span></button>
+    </div></div>
+    <div class="screen dark" style="flex:1;min-width:330px"><div class="bar" style="flex-wrap:wrap">
+      <button class="calc" style="flex:none;width:120px">▦ أحسب</button>
+      <button class="calc" style="flex:none;width:70px"><span class="spin"></span></button>
+      <button class="calc ok" style="flex:none;width:70px"><span class="mark">✓</span></button>
+      <button class="calc bad" style="flex:none;width:70px"><span class="mark">✕</span></button>
+      <button class="reset" style="flex:none;width:100px">↺ تصفير</button>
+      <button class="reset" style="flex:none;width:64px"><span class="spin"></span></button>
+      <button class="reset ok" style="flex:none;width:64px"><span class="mark">✓</span></button>
+      <button class="reset bad" style="flex:none;width:64px"><span class="mark">✕</span></button>
+    </div></div>
+  </div>
+</div>
+
+<div class="ctl">
+  <label><input type="radio" name="out" value="ok" checked> النتيجة: نجاح ✓</label>
+  <label><input type="radio" name="out" value="bad"> النتيجة: فشل ✗</label>
+  
+</div>
+
+<div class="note">
+  <h3>السلوك المعتمد (الخيار 3)</h3>
+  <b>أحسب</b> — الحساب فوري، فما فيه دائرة إطلاقًا. ضغطة ← <b>✓ أخضر</b> مباشرة لمدة 1.3 ثانية ثم يرجع.
+  توجيه Material نفسه بيقول إن مؤشر التحميل لازم يعكس عملية جارية ولا يكون زخرفيًا، ودائرة على حساب
+  خلص أصلًا بتكون زخرفة.
+  <br><br>
+  <b>تصفير</b> — دائرة <b>حقيقية</b> بتدور طول ما تحديث الأسعار شغال على الشبكة، وبعدين ✓ أو <b>✗ أحمر</b>
+  إذا فشل الاتصال.
+  <br><br>
+  علامة ✗ بزر أحسب إلها معنى فعلي: بتطلع لما يكون في خطأ إدخال (رقم غير صالح، سعر ناقص،
+  نسبة أتعاب ≥ 100٪) أو ما في مبلغ مُدخل.
+</div>
+
+<script>
+  const outOf = () => document.querySelector('input[name=out]:checked').value;
+
+  const IDLE = {calc: '▦ أحسب', reset: '↺ تصفير'};
+
+  function render(btn, state, act){
+    btn.classList.remove('ok','bad');
+    if (state === 'busy'){ btn.innerHTML = '<span class="spin"></span>'; }
+    else if (state === 'ok'){ btn.classList.add('ok'); btn.innerHTML = '<span class="mark">✓</span>'; }
+    else if (state === 'bad'){ btn.classList.add('bad'); btn.innerHTML = '<span class="mark">✕</span>'; }
+    else { btn.textContent = IDLE[act]; }
+  }
+
+  document.querySelectorAll('button').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (btn.dataset.busy) return;
+      btn.dataset.busy = '1';
+      const act = btn.dataset.act;
+      // Reset waits on a real network refresh. Calculate is instant, so it never spins.
+      if (act === "reset") {
+        render(btn, "busy", act);
+        await new Promise(r => setTimeout(r, 900));
+      }
+      render(btn, outOf(), act);
+      await new Promise(r => setTimeout(r, 1300));
+      render(btn, 'idle', act);
+      delete btn.dataset.busy;
+    });
+  });
+</script>

@@ -52,8 +52,6 @@
     <string name="action_calculate">Calculate</string>
     <string name="action_reset">Reset</string>
     <string name="action_undo">Undo</string>
-    <string name="calc_done">Recalculated — results are up to date</string>
-    <string name="calc_no_input">Enter an amount first</string>
     <string name="reset_done">Reset — defaults restored, refreshing rates</string>
 
     <!-- Settings -->
@@ -117,4 +115,18 @@
     <string name="action_cancel">Cancel</string>
     <string name="action_save">Save</string>
     <string name="action_delete">Delete</string>
+
+    <!-- Cash download -->
+    <string name="section_transfer">Transfer</string>
+    <string name="section_download">Cash download</string>
+    <string name="download_title">Download an amount</string>
+    <string name="download_hint">How much cash to hand over so the balance you want reaches the wallet.</string>
+    <string name="download_desired_digital">Balance that must reach the wallet</string>
+    <string name="download_pct_rate">Cash-to-digital rate %</string>
+    <string name="download_result_digital">Arrives in the wallet</string>
+    <string name="download_result_cost">Cost of the operation</string>
+    <string name="download_result_cash">Cash to hand over</string>
+    <string name="download_rate_overflow">The rate must be under 100%</string>
+    <string name="action_done">Done</string>
+    <string name="action_failed">Failed</string>
 </resources>

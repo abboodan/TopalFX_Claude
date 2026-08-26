@@ -7,7 +7,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material.icons.automirrored.filled.CallMade
+import androidx.compose.material.icons.automirrored.filled.CallReceived
+import androidx.compose.material.icons.filled.SwapHoriz
 import androidx.compose.material.icons.filled.WarningAmber
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -19,9 +24,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.dp
 import com.topaloglu.topalfx.R
 import com.topaloglu.topalfx.data.CalcMode
@@ -55,24 +64,14 @@ fun ResultsCard(
     ) {
         Column(
             modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Text(
                 text = stringResource(R.string.results_title),
                 style = MaterialTheme.typography.titleMedium,
             )
 
-            ResultRow(stringResource(R.string.result_cash_received), result.cashReceived, baseCode)
-            ResultRow(
-                stringResource(R.string.result_transfer_amount),
-                result.transferAmount,
-                baseCode,
-            )
-            ResultRow(
-                stringResource(R.string.result_target_delivered),
-                result.targetDelivered,
-                targetCode,
-            )
+            MoneyFlow(result = result, baseCode = baseCode, targetCode = targetCode)
 
             HorizontalDivider()
             Text(
@@ -81,28 +80,34 @@ fun ResultsCard(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
 
-            if (mode != CalcMode.CUSTOM_DEAL) {
+            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                if (mode != CalcMode.CUSTOM_DEAL) {
+                    ResultRow(
+                        stringResource(R.string.result_pct_fee),
+                        profit(result.customerFeeBase),
+                        profitCode,
+                        Sign.REVENUE,
+                    )
+                    ResultRow(
+                        stringResource(R.string.result_delivery_fee_base),
+                        profit(result.deliveryFeeBase),
+                        profitCode,
+                        Sign.COST,
+                    )
+                }
                 ResultRow(
-                    stringResource(R.string.result_pct_fee),
-                    profit(result.customerFeeBase),
+                    stringResource(R.string.result_hidden_spread),
+                    profit(result.hiddenSpread),
                     profitCode,
+                    Sign.REVENUE,
                 )
                 ResultRow(
-                    stringResource(R.string.result_delivery_fee_base),
-                    profit(result.deliveryFeeBase),
+                    stringResource(R.string.result_agent_pct),
+                    profit(result.agentCostBase),
                     profitCode,
+                    Sign.COST,
                 )
             }
-            ResultRow(
-                stringResource(R.string.result_hidden_spread),
-                profit(result.hiddenSpread),
-                profitCode,
-            )
-            ResultRow(
-                stringResource(R.string.result_agent_pct),
-                profit(result.agentCostBase),
-                profitCode,
-            )
 
             if (toEur == null) {
                 Text(
@@ -114,12 +119,6 @@ fun ResultsCard(
 
             HorizontalDivider()
             val netProfit = result.netProfitEur ?: result.netProfitBase
-            val profitColor =
-                if (netProfit >= 0.0) {
-                    if (isSystemInDarkTheme()) ProfitDark else ProfitLight
-                } else {
-                    MaterialTheme.colorScheme.error
-                }
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -131,10 +130,13 @@ fun ResultsCard(
                 )
                 Text(
                     text = "${formatAmount(netProfit)} $profitCode",
-                    style = MaterialTheme.typography.titleMedium,
+                    // Forced LTR, or a losing figure renders its minus sign on the wrong
+                    // side in an Arabic paragraph.
+                    style = MaterialTheme.typography.titleMedium
+                        .copy(textDirection = TextDirection.Ltr),
                     fontWeight = FontWeight.Bold,
                     fontFamily = FontFamily.Monospace,
-                    color = profitColor,
+                    color = if (netProfit >= 0.0) profitGreen() else MaterialTheme.colorScheme.error,
                 )
             }
             // Keep the base-currency figure visible when it differs from the EUR total.
@@ -170,6 +172,122 @@ fun ResultsCard(
     }
 }
 
+/**
+ * The three amounts that matter, laid out as the journey the money actually takes:
+ * cash in ➔ what is left to transfer ➔ what the beneficiary collects.
+ *
+ * Each step carries its own colour and icon so the counter number and the payout number
+ * are told apart at a glance, without reading the labels.
+ */
+@Composable
+private fun MoneyFlow(
+    result: CalcResult,
+    baseCode: String,
+    targetCode: String,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        FlowStep(
+            icon = Icons.AutoMirrored.Filled.CallReceived,
+            label = stringResource(R.string.result_cash_received),
+            value = result.cashReceived,
+            currencyCode = baseCode,
+            container = MaterialTheme.colorScheme.primaryContainer,
+            onContainer = MaterialTheme.colorScheme.onPrimaryContainer,
+            modifier = Modifier.weight(1f),
+        )
+        FlowArrow()
+        // Outlined rather than filled: the middle step is a way-station, not an endpoint,
+        // and separating it by SHAPE keeps the two filled endpoints unmistakable even
+        // where two tints would sit too close together.
+        FlowStep(
+            icon = Icons.Filled.SwapHoriz,
+            label = stringResource(R.string.result_transfer_amount),
+            value = result.transferAmount,
+            currencyCode = baseCode,
+            container = Color.Transparent,
+            onContainer = MaterialTheme.colorScheme.onSurfaceVariant,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline),
+            modifier = Modifier.weight(1f),
+        )
+        FlowArrow()
+        FlowStep(
+            icon = Icons.AutoMirrored.Filled.CallMade,
+            label = stringResource(R.string.result_target_delivered),
+            value = result.targetDelivered,
+            currencyCode = targetCode,
+            container = MaterialTheme.colorScheme.secondaryContainer,
+            onContainer = MaterialTheme.colorScheme.onSecondaryContainer,
+            modifier = Modifier.weight(1f),
+        )
+    }
+}
+
+@Composable
+private fun FlowStep(
+    icon: ImageVector,
+    label: String,
+    value: Double,
+    currencyCode: String,
+    container: Color,
+    onContainer: Color,
+    modifier: Modifier = Modifier,
+    border: BorderStroke? = null,
+) {
+    Surface(
+        modifier = modifier,
+        color = container,
+        contentColor = onContainer,
+        shape = MaterialTheme.shapes.small,
+        border = border,
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(3.dp),
+        ) {
+            Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp))
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                textAlign = TextAlign.Center,
+            )
+            Text(
+                text = formatAmount(value),
+                style = MaterialTheme.typography.titleSmall
+                    .copy(textDirection = TextDirection.Ltr),
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Monospace,
+                textAlign = TextAlign.Center,
+            )
+            Text(
+                text = currencyCode,
+                style = MaterialTheme.typography.labelSmall
+                    .copy(textDirection = TextDirection.Ltr),
+                fontFamily = FontFamily.Monospace,
+            )
+        }
+    }
+}
+
+/** AutoMirrored so the flow runs right-to-left in Arabic. */
+@Composable
+private fun FlowArrow() {
+    Icon(
+        Icons.AutoMirrored.Filled.ArrowForward,
+        contentDescription = null,
+        modifier = Modifier.size(14.dp),
+        tint = MaterialTheme.colorScheme.outline,
+    )
+}
+
+/** Whether a breakdown line adds to the profit or eats it. */
+private enum class Sign { REVENUE, COST }
+
 @Composable
 private fun NegativeProfitWarning(breakEvenPctFee: Double?, modifier: Modifier = Modifier) {
     Surface(
@@ -198,18 +316,31 @@ private fun NegativeProfitWarning(breakEvenPctFee: Double?, modifier: Modifier =
 }
 
 @Composable
-private fun ResultRow(label: String, value: Double, currencyCode: String) {
+private fun ResultRow(label: String, value: Double, currencyCode: String, sign: Sign) {
+    val tint = when (sign) {
+        Sign.REVENUE -> profitGreen()
+        Sign.COST -> MaterialTheme.colorScheme.error
+    }
+    // The sign is what makes the breakdown scannable: everything green is coming in,
+    // everything red is going out, and the bold total at the bottom is the difference.
+    val prefix = if (sign == Sign.REVENUE) "+" else "−"
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(text = label, style = MaterialTheme.typography.bodyMedium)
         Text(
-            text = "${formatAmount(value)} $currencyCode",
-            style = MaterialTheme.typography.bodyMedium,
+            text = "$prefix ${formatAmount(value)} $currencyCode",
+            style = MaterialTheme.typography.bodyMedium
+                .copy(textDirection = TextDirection.Ltr),
             fontFamily = FontFamily.Monospace,
+            color = tint,
         )
     }
 }
+
+@Composable
+private fun profitGreen(): Color = if (isSystemInDarkTheme()) ProfitDark else ProfitLight
 
 private val TIME_FORMAT = SimpleDateFormat("HH:mm:ss", Locale.US)

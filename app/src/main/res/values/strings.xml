@@ -52,8 +52,6 @@
     <string name="action_calculate">أحسب</string>
     <string name="action_reset">تصفير</string>
     <string name="action_undo">تراجع</string>
-    <string name="calc_done">تمت إعادة الحساب — النتائج محدَّثة</string>
-    <string name="calc_no_input">أدخل المبلغ أولاً</string>
     <string name="reset_done">تم التصفير — أُعيدت القيم الافتراضية ويجري تحديث الأسعار</string>
 
     <!-- Settings -->
@@ -117,4 +115,18 @@
     <string name="action_cancel">إلغاء</string>
     <string name="action_save">حفظ</string>
     <string name="action_delete">حذف</string>
+
+    <!-- Cash download -->
+    <string name="section_transfer">حوالة</string>
+    <string name="section_download">إعادة تنزيل</string>
+    <string name="download_title">إعادة تنزيل مبلغ</string>
+    <string name="download_hint">كم كاش لازم تسلّم حتى يوصل للمحفظة المبلغ اللي بدك إياه.</string>
+    <string name="download_desired_digital">المبلغ المطلوب وصوله للمحفظة</string>
+    <string name="download_pct_rate">نسبة إعادة التنزيل %</string>
+    <string name="download_result_digital">الواصل للمحفظة</string>
+    <string name="download_result_cost">تكلفة العملية</string>
+    <string name="download_result_cash">الكاش المطلوب تسليمه</string>
+    <string name="download_rate_overflow">نسبة التنزيل يجب أن تكون أقل من 100٪</string>
+    <string name="action_done">تم</string>
+    <string name="action_failed">فشل</string>
 </resources>

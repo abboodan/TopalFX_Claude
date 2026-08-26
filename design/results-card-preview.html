@@ -1,0 +1,102 @@
+<title>TopalFX Results Card — Theme Check</title>
+<style>
+  body{margin:0;font-family:"Segoe UI",system-ui,sans-serif;background:#8a8a8a;padding:24px;
+       display:flex;gap:24px;flex-wrap:wrap;justify-content:center;direction:rtl}
+  .pane{flex:1;min-width:340px;max-width:420px}
+  .pane h2{font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 10px;color:#fff}
+
+  /* ---- light scheme (from Color.kt) ---- */
+  .light{--bg:#F6F8FC;--card:#FFFFFF;--ink:#11151B;--muted:#4A5462;--outline:#7B8697;
+         --cashBg:#BBD3F0;--cashInk:#071A33;--outBg:#F0D992;--outInk:#3D2F00;
+         --profit:#1B6B3A;--err:#B3261E;--errBg:#F9DEDC;--errInk:#410E0B;--primary:#0B2545}
+  /* ---- dark scheme ---- */
+  .dark{--bg:#0C1117;--card:#131A22;--ink:#E7ECF3;--muted:#A5B0BF;--outline:#6C7787;
+        --cashBg:#16324F;--cashInk:#D8E3F5;--outBg:#5E4A00;--outInk:#F7EAC4;
+        --profit:#6FD394;--err:#FFB4AB;--errBg:#8C1D18;--errInk:#F9DEDC;--primary:#A9C7F0}
+
+  .screen{background:var(--bg);border-radius:14px;padding:16px}
+  .card{background:var(--card);color:var(--ink);border-radius:12px;padding:16px;
+        box-shadow:0 1px 3px rgb(0 0 0 /.2)}
+  .title{font-size:16px;font-weight:600;margin-bottom:12px}
+
+  .flow{display:flex;align-items:center;gap:4px}
+  .tile{flex:1;border-radius:8px;padding:10px 8px;text-align:center;display:flex;
+        flex-direction:column;align-items:center;gap:3px}
+  .tile.cash{background:var(--cashBg);color:var(--cashInk)}
+  .tile.mid{background:transparent;color:var(--muted);border:1px solid var(--outline)}
+  .tile.out{background:var(--outBg);color:var(--outInk)}
+  .tile .ico{font-size:15px;line-height:1}
+  .tile .lab{font-size:10px;line-height:1.25}
+  .tile .val{font-size:14px;font-weight:700;font-family:ui-monospace,Consolas,monospace}
+  .tile .cur{font-size:10px;font-family:ui-monospace,Consolas,monospace;opacity:.85}
+  .arrow{color:var(--outline);font-size:13px}
+
+  hr{border:0;border-top:1px solid var(--outline);opacity:.35;margin:12px 0}
+  .sec{font-size:12px;color:var(--muted);margin-bottom:8px}
+  .row{display:flex;justify-content:space-between;font-size:13px;margin:5px 0}
+  .num{font-family:ui-monospace,Consolas,monospace}
+  .rev{color:var(--profit)} .cost{color:var(--err)}
+  .net{display:flex;justify-content:space-between;font-size:16px;font-weight:700;margin-top:4px}
+  .net .num{color:var(--profit)}
+  .net.bad .num{color:var(--err)}
+  .warn{display:flex;gap:8px;align-items:center;background:var(--errBg);color:var(--errInk);
+        border:1px solid var(--err);border-radius:8px;padding:10px;font-size:12px;margin-top:10px}
+  .stamp{font-size:11px;color:var(--muted);margin-top:8px}
+  .btnbar{display:flex;gap:12px;margin-top:14px}
+  .btn{flex:1.6;background:var(--primary);color:var(--card);border-radius:20px;padding:10px;
+       text-align:center;font-size:13px;font-weight:600}
+  .btn.ghost{flex:1;background:transparent;color:var(--primary);border:1px solid var(--outline)}
+</style>
+
+<div class="pane">
+  <h2>Light</h2>
+  <div class="screen light">
+    <div class="card">
+      <div class="title">النتائج</div>
+      <div class="flow">
+        <div class="tile cash"><span class="ico">⤵</span><span class="lab">المقبوض من الزبون</span><span class="val">100.00</span><span class="cur">EUR</span></div>
+        <span class="arrow">←</span>
+        <div class="tile mid"><span class="ico">⇄</span><span class="lab">مبلغ الحوالة</span><span class="val">95.00</span><span class="cur">EUR</span></div>
+        <span class="arrow">←</span>
+        <div class="tile out"><span class="ico">⤴</span><span class="lab">الواصل للمستفيد</span><span class="val">111.14</span><span class="cur">USD</span></div>
+      </div>
+      <hr>
+      <div class="sec">تفاصيل الربح (EUR)</div>
+      <div class="row"><span>الأتعاب</span><span class="num rev">+ 5.00 EUR</span></div>
+      <div class="row"><span>أجرة التسليم (تُخصم من الربح)</span><span class="num cost">− 0.85 EUR</span></div>
+      <div class="row"><span>ربح فرق السعر</span><span class="num rev">+ 0.00 EUR</span></div>
+      <div class="row"><span>إعادة التنزيل</span><span class="num cost">− 2.50 EUR</span></div>
+      <hr>
+      <div class="net"><span>صافي الربح</span><span class="num">1.65 EUR</span></div>
+      <div class="stamp">آخر حساب: 14:32:05</div>
+      <div class="btnbar"><div class="btn ghost">تصفير</div><div class="btn">أحسب</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="pane">
+  <h2>Dark</h2>
+  <div class="screen dark">
+    <div class="card">
+      <div class="title">النتائج</div>
+      <div class="flow">
+        <div class="tile cash"><span class="ico">⤵</span><span class="lab">المقبوض من الزبون</span><span class="val">100.00</span><span class="cur">EUR</span></div>
+        <span class="arrow">←</span>
+        <div class="tile mid"><span class="ico">⇄</span><span class="lab">مبلغ الحوالة</span><span class="val">95.00</span><span class="cur">EUR</span></div>
+        <span class="arrow">←</span>
+        <div class="tile out"><span class="ico">⤴</span><span class="lab">الواصل للمستفيد</span><span class="val">111.14</span><span class="cur">USD</span></div>
+      </div>
+      <hr>
+      <div class="sec">تفاصيل الربح (EUR)</div>
+      <div class="row"><span>الأتعاب</span><span class="num rev">+ 2.00 EUR</span></div>
+      <div class="row"><span>أجرة التسليم (تُخصم من الربح)</span><span class="num cost">− 0.85 EUR</span></div>
+      <div class="row"><span>ربح فرق السعر</span><span class="num rev">+ 0.00 EUR</span></div>
+      <div class="row"><span>إعادة التنزيل</span><span class="num cost">− 2.50 EUR</span></div>
+      <hr>
+      <div class="net bad"><span>صافي الربح</span><span class="num">−1.35 EUR</span></div>
+      <div class="warn"><span>⚠</span><span>الربح سالب — أقل نسبة أتعاب للتعادل: ‎3.36٪</span></div>
+      <div class="stamp">آخر حساب: 14:32:05</div>
+      <div class="btnbar"><div class="btn ghost">تصفير</div><div class="btn">أحسب</div></div>
+    </div>
+  </div>
+</div>

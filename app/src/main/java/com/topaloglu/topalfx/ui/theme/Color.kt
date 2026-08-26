@@ -15,10 +15,10 @@ val NavyLift = Color(0xFF12325C)
 val Gold = Color(0xFFC9A227)
 
 // Light scheme
-val NavyContainerLight = Color(0xFFD8E3F5)
+val NavyContainerLight = Color(0xFFBBD3F0)
 val OnNavyContainerLight = Color(0xFF071A33)
 val GoldDeep = Color(0xFF7D6210)
-val GoldContainerLight = Color(0xFFF7EAC4)
+val GoldContainerLight = Color(0xFFF0D992)
 val OnGoldContainerLight = Color(0xFF3D2F00)
 val SurfaceLight = Color(0xFFFFFFFF)
 val SurfaceVariantLight = Color(0xFFE3E8F0)
