@@ -68,6 +68,8 @@
     <string name="settings_default_pct_agent">Default cash-to-digital %</string>
     <string name="settings_default_deduction">Default deduction base</string>
     <string name="settings_default_customer_discount">Default discount off market rate</string>
+    <string name="settings_section_download">Cash download</string>
+    <string name="settings_default_download_from_amount">Fee comes out of the amount by default</string>
     <string name="settings_saved">Settings saved</string>
     <string name="action_theme_light">Switch to light theme</string>
     <string name="action_theme_dark">Switch to dark theme</string>

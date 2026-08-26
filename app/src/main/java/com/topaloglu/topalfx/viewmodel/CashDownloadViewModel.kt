@@ -58,7 +58,6 @@ class CashDownloadViewModel(app: Application) : AndroidViewModel(app) {
             withDefaults(
                 CashDownloadUiState(
                     currency = previous.currency,
-                    feeFromAmount = previous.feeFromAmount,
                     actionId = previous.actionId + 1,
                 )
             )
@@ -69,8 +68,9 @@ class CashDownloadViewModel(app: Application) : AndroidViewModel(app) {
     fun applyDefaults() = update { withDefaults(it) }
 
     private fun withDefaults(state: CashDownloadUiState): CashDownloadUiState = state.copy(
+        feeFromAmount = Prefs.getDefaultDownloadFromAmount(getApplication()),
         fields = state.fields +
-            (DownloadField.PCT_RATE to Prefs.getDefaultPctAgentCost(getApplication()))
+            (DownloadField.PCT_RATE to Prefs.getDefaultPctAgentCost(getApplication())),
     )
 
     private fun update(transform: (CashDownloadUiState) -> CashDownloadUiState) {

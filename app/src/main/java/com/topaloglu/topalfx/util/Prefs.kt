@@ -19,6 +19,7 @@ object Prefs {
     private const val KEY_DEFAULT_DIRECTION = "default_direction"
     private const val KEY_DEFAULT_MODE = "default_mode"
     private const val KEY_THEME_MODE = "theme_mode"
+    private const val KEY_DEFAULT_DOWNLOAD_FROM_AMOUNT = "default_download_from_amount"
 
     /** Retired in 1.2.0 — purged on the next settings save. */
     private const val KEY_RETIRED_FLAT_AGENT_COST = "default_flat_agent_cost"
@@ -28,6 +29,9 @@ object Prefs {
 
     /** The typed amount is normally the cash the customer hands over. */
     const val DEFAULT_FEE_INCLUSIVE = true
+
+    /** إعادة التنزيل is normally taken out of the cash already in hand. */
+    const val DEFAULT_DOWNLOAD_FROM_AMOUNT = true
 
     val DEFAULT_DIRECTION = TransferDirection.EUR_TO_USD
     val DEFAULT_MODE = CalcMode.SEND_EXACT
@@ -85,6 +89,9 @@ object Prefs {
     fun getDefaultFeeInclusive(context: Context): Boolean =
         prefs(context).getBoolean(KEY_DEFAULT_FEE_INCLUSIVE, DEFAULT_FEE_INCLUSIVE)
 
+    fun getDefaultDownloadFromAmount(context: Context): Boolean =
+        prefs(context).getBoolean(KEY_DEFAULT_DOWNLOAD_FROM_AMOUNT, DEFAULT_DOWNLOAD_FROM_AMOUNT)
+
     fun getDefaultDeductionBase(context: Context): DeductionBase =
         readEnum(context, KEY_DEFAULT_DEDUCTION_BASE, DeductionBase.entries, DEFAULT_DEDUCTION_BASE)
 
@@ -107,6 +114,7 @@ object Prefs {
         pctAgentCost: String,
         deductionBase: DeductionBase,
         customerDiscount: Double,
+        downloadFromAmount: Boolean,
     ) {
         prefs(context).edit()
             .putString(KEY_DEFAULT_DIRECTION, direction.name)
@@ -116,6 +124,7 @@ object Prefs {
             .putString(KEY_DEFAULT_PCT_AGENT_COST, pctAgentCost.trim())
             .putString(KEY_DEFAULT_DEDUCTION_BASE, deductionBase.name)
             .putFloat(KEY_DEFAULT_CUSTOMER_DISCOUNT, customerDiscount.toFloat())
+            .putBoolean(KEY_DEFAULT_DOWNLOAD_FROM_AMOUNT, downloadFromAmount)
             .remove(KEY_RETIRED_FLAT_AGENT_COST)
             .apply()
     }

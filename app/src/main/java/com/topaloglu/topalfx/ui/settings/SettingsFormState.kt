@@ -21,6 +21,7 @@ data class SettingsFormState(
     val pctAgentCost: String = "",
     val deductionBase: DeductionBase = Prefs.DEFAULT_DEDUCTION_BASE,
     val customerDiscount: String = "0.0100",
+    val downloadFromAmount: Boolean = Prefs.DEFAULT_DOWNLOAD_FROM_AMOUNT,
 ) {
     companion object {
         fun from(context: Context) = SettingsFormState(
@@ -31,6 +32,7 @@ data class SettingsFormState(
             pctAgentCost = Prefs.getDefaultPctAgentCost(context),
             deductionBase = Prefs.getDefaultDeductionBase(context),
             customerDiscount = formatRate(Prefs.getDefaultCustomerDiscount(context)),
+            downloadFromAmount = Prefs.getDefaultDownloadFromAmount(context),
         )
     }
 }

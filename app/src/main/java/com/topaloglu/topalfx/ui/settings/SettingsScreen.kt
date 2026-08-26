@@ -56,6 +56,7 @@ fun SettingsScreen(
                 customerDiscount = CalculatorViewModel.parse(form.customerDiscount)
                     .takeIf { it.isFinite() && it >= 0.0 }
                     ?: Prefs.DEFAULT_CUSTOMER_DISCOUNT,
+                downloadFromAmount = form.downloadFromAmount,
             )
             onSaved()
         },
@@ -190,6 +191,15 @@ fun SettingsScreenContent(
             onValueChange = { onFormChange(form.copy(customerDiscount = it)) },
             label = stringResource(R.string.settings_default_customer_discount),
             errorText = discountError,
+        )
+
+        SectionHeader(stringResource(R.string.settings_section_download))
+
+        LabeledSwitchRow(
+            label = stringResource(R.string.settings_default_download_from_amount),
+            checked = form.downloadFromAmount,
+            onCheckedChange = { onFormChange(form.copy(downloadFromAmount = it)) },
+            supportingText = stringResource(R.string.download_fee_from_amount_hint),
         )
 
         Button(
